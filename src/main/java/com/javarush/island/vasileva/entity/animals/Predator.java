@@ -1,0 +1,29 @@
+package com.javarush.island.vasileva.entity.animals;
+
+public class Predator extends Animal {
+    public Predator() {
+    }
+
+    public Predator(String name,
+                    double weight,
+                    int maxPerCell,
+                    int speed,
+                    double foodRequired) {
+        super(name, weight, maxPerCell, speed, foodRequired);
+    }
+
+    @Override
+    public void eat() {
+        System.out.println("Predator is eating");
+    }
+
+    @Override
+    public void reproduce() {
+        System.out.println("Predator is reproducing");
+    }
+
+    @Override
+    public void move() {
+        System.out.println("Predator is moving");
+    }
+}
