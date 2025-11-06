@@ -1,5 +1,6 @@
 package com.javarush.island.vasileva.entity.animals;
 
+import com.javarush.island.vasileva.Location;
 import com.javarush.island.vasileva.entity.Species;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import lombok.Setter;
 public abstract class Animal extends Species {
     private int speed;
     private double foodRequired;
-    //private Cell cell;
+    private Location location;
 
     public Animal() {
     }
