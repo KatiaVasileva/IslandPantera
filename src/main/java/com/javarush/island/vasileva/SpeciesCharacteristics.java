@@ -13,4 +13,5 @@ public @interface SpeciesCharacteristics {
     int speed() default 0;
     double foodRequired() default 0;
     int maxPerCell();
+    String image();
 }

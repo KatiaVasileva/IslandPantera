@@ -8,8 +8,9 @@ public class Predator extends Animal {
                     double weight,
                     int maxPerCell,
                     int speed,
-                    double foodRequired) {
-        super(name, weight, maxPerCell, speed, foodRequired);
+                    double foodRequired,
+                    String image) {
+        super(name, weight, maxPerCell, speed, foodRequired, image);
     }
 
     @Override

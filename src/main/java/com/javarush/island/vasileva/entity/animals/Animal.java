@@ -15,8 +15,8 @@ public abstract class Animal extends Species {
     public Animal() {
     }
 
-    public Animal(String name, double weight, int maxPerCell, int speed, double foodRequired) {
-        super(name, weight, maxPerCell);
+    public Animal(String name, double weight, int maxPerCell, int speed, double foodRequired, String image) {
+        super(name, weight, maxPerCell, image);
         this.speed = speed;
         this.foodRequired = foodRequired;
     }

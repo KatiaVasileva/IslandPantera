@@ -6,7 +6,7 @@ public abstract class Plant extends Species {
     public Plant() {
     }
 
-    public Plant(String name, double weight, int maxPerCell) {
-        super(name, weight, maxPerCell);
+    public Plant(String name, double weight, int maxPerCell, String image) {
+        super(name, weight, maxPerCell, image);
     }
 }

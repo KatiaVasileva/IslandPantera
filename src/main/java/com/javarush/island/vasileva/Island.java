@@ -1,12 +1,15 @@
 package com.javarush.island.vasileva;
 
+import com.javarush.island.vasileva.entity.Species;
 import com.javarush.island.vasileva.entity.animals.Animal;
-import com.javarush.island.vasileva.entity.animals.herbivores.Horse;
-import com.javarush.island.vasileva.entity.animals.predators.Wolf;
+import com.javarush.island.vasileva.entity.animals.herbivores.*;
+import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -46,7 +49,7 @@ public class Island {
     public void growPlants() {
         for (Location[] row : grid) {
             for (Location location : row) {
-                if (location.getPlants().size() <200) {
+                if (location.getPlants().size() < 200) {
                     location.addPlant(new Grass());
                 }
             }
@@ -71,25 +74,59 @@ public class Island {
 
     private void getStatistics() {
         int totalAnimals = 0;
-        List<Wolf> wolves = new ArrayList<>();
-        List<Horse> horses = new ArrayList<>();
+        for (Location[] row : grid) {
+            for (Location location : row) {
+                totalAnimals += location.getAnimals().size();
+            }
+        }
+        printStatistics(totalAnimals);
+    }
+
+    public void printStatistics(int totalAnimals) {
+        System.out.println("Total animals: " + totalAnimals +
+                "\n" + getAnimalImage(Wolf.class) + " - " + countAnimalsBySpecies(Wolf.class) +
+                " | " + getAnimalImage(Boa.class) + " - " + countAnimalsBySpecies(Boa.class) +
+                " | " + getAnimalImage(Bear.class) + " - " + countAnimalsBySpecies(Bear.class) +
+                " | " + getAnimalImage(Eagle.class) + " - " + countAnimalsBySpecies(Eagle.class) +
+                " | " + getAnimalImage(Boar.class) + " - " + countAnimalsBySpecies(Boar.class) +
+                " | " + getAnimalImage(Fox.class) + " - " + countAnimalsBySpecies(Fox.class) +
+                " | " + getAnimalImage(Horse.class) + " - " + countAnimalsBySpecies(Horse.class) +
+                " | " + getAnimalImage(Rabbit.class) + " - " + countAnimalsBySpecies(Rabbit.class) +
+                " | " + getAnimalImage(Bull.class) + " - " + countAnimalsBySpecies(Bull.class) +
+                " | " + getAnimalImage(Deer.class) + " - " + countAnimalsBySpecies(Deer.class) +
+                " | " + getAnimalImage(Goat.class) + " - " + countAnimalsBySpecies(Goat.class) +
+                " | " + getAnimalImage(Mouse.class) + " - " + countAnimalsBySpecies(Mouse.class) +
+                " | " + getAnimalImage(Sheep.class) + " - " + countAnimalsBySpecies(Sheep.class) +
+                " | " + getAnimalImage(Duck.class) + " - " + countAnimalsBySpecies(Duck.class) +
+                " | " + getAnimalImage(Worm.class) + " - " + countAnimalsBySpecies(Worm.class) +
+                " | " + getAnimalImage(Grass.class) + " - " + countAnimalsBySpecies(Grass.class));
+    }
+
+    public int countAnimalsBySpecies(AnnotatedElement annotatedElement) {
+        List<? super Animal> animalsBySpecies = new ArrayList<>();
         for (Location[] row : grid) {
             for (Location location : row) {
                 List<Animal> animals = location.getAnimals();
                 for (Animal animal : animals) {
-                    if (animal.isALive() && animal instanceof Wolf wolf) {
-                        wolves.add(wolf);
-                    }
-                    if (animal.isALive() && animal instanceof Horse horse) {
-                        horses.add(horse);
+                    Annotation[] annotations = annotatedElement.getAnnotations();
+                    if (animal.isALive() && animal.getClass().getSimpleName().equals(((SpeciesCharacteristics) annotations[0]).name())) {
+                        animalsBySpecies.add(animal);
                     }
                 }
-                totalAnimals += location.getAnimals().size();
             }
         }
-        System.out.println("Total animals: " + totalAnimals);
-        System.out.println("Wolves: " + wolves.size());
-        System.out.println("Horses: " + horses.size());
+        return animalsBySpecies.size();
+    }
+
+    public String getAnimalImage(Class<? extends Species> speciesClass) {
+        String image = "";
+        Annotation[] annotations = speciesClass.getAnnotations();
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof SpeciesCharacteristics speciesCharacteristics) {
+                image = speciesCharacteristics.image();
+            }
+        }
+        return image;
     }
 
 }
