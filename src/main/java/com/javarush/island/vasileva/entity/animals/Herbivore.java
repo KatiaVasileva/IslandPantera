@@ -15,16 +15,16 @@ public class Herbivore extends Animal {
 
     @Override
     public void eat() {
-        System.out.println("Herbivore is eating");
+//        System.out.println("Herbivore is eating");
     }
 
     @Override
     public void reproduce() {
-        System.out.println("Herbivore is reproducing");
+//        System.out.println("Herbivore is reproducing");
     }
 
     @Override
     public void move() {
-        System.out.println("Herbivore is moving");
+//        System.out.println("Herbivore is moving");
     }
 }

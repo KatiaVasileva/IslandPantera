@@ -15,16 +15,16 @@ public class Predator extends Animal {
 
     @Override
     public void eat() {
-        System.out.println("Predator is eating");
+//        System.out.println("Predator is eating");
     }
 
     @Override
     public void reproduce() {
-        System.out.println("Predator is reproducing");
+//        System.out.println("Predator is reproducing");
     }
 
     @Override
     public void move() {
-        System.out.println("Predator is moving");
+//        System.out.println("Predator is moving");
     }
 }

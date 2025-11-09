@@ -28,6 +28,7 @@ public class Location {
 
     public synchronized void addPlant(Plant plant) {
         plants.add(plant);
+        plant.setLocation(this);
     }
 
     public synchronized List<Animal> getAnimals() {
