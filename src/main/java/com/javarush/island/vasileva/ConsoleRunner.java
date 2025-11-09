@@ -2,9 +2,11 @@ package com.javarush.island.vasileva;
 
 import com.javarush.island.vasileva.config.Setting;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class ConsoleRunner {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
         Island island = new Island(Setting.WIDTH, Setting.HEIGHT);
 

@@ -1,9 +1,12 @@
 package com.javarush.island.vasileva.config;
 
 import com.javarush.island.vasileva.Island;
+import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class Setting {
     public static final int CORE_POOL_SIZE = 3;
@@ -12,25 +15,19 @@ public class Setting {
     public static final int HEIGHT = 20;
     public static final int TICK_DURATION = 1000;
 
-    private Setting() {}
+    public static final Class<?>[] TYPES = {
+            Wolf.class, Bear.class, Horse.class, Duck.class, Rabbit.class, Mouse.class, Deer.class,
+            Boar.class, Eagle.class, Fox.class, Goat.class, Sheep.class, Bull.class, Boa.class,
+            Worm.class, Grass.class
+    };
 
-    public static void init(Island island) {
-        new Wolf().placeOrganisms(island);
-        new Bear().placeOrganisms(island);
-        new Boar().placeOrganisms(island);
-        new Fox().placeOrganisms(island);
-        new Eagle().placeOrganisms(island);
-        new Horse().placeOrganisms(island);
-        new Sheep().placeOrganisms(island);
-        new Goat().placeOrganisms(island);
-        new Mouse().placeOrganisms(island);
-        new Duck().placeOrganisms(island);
-        new Worm().placeOrganisms(island);
-        new Boa().placeOrganisms(island);
-        new Bull().placeOrganisms(island);
-        new Deer().placeOrganisms(island);
-        new Rabbit().placeOrganisms(island);
-        new Grass().placeOrganisms(island);
+    private Setting() {
     }
 
+    public static void init(Island island) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        for (Class<?> type : TYPES) {
+            Organism org = (Organism) type.getConstructor().newInstance();
+            org.placeOrganisms(island);
+        }
+    }
 }
