@@ -1,6 +1,6 @@
 package com.javarush.island.vasileva.entity.plants;
 
-import com.javarush.island.vasileva.SpeciesCharacteristics;
+import com.javarush.island.vasileva.api.annotations.SpeciesCharacteristics;
 
 @SpeciesCharacteristics(name = "Grass", weight = 1, maxPerCell = 200, image = "\uD83C\uDF3F")
 public class Grass extends Plant {

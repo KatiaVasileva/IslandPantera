@@ -1,6 +1,8 @@
 package com.javarush.island.vasileva.entity.animals;
 
-public class Herbivore extends Animal {
+import com.javarush.island.vasileva.api.interfaces.Eatable;
+
+public class Herbivore extends Animal implements Eatable {
     public Herbivore() {
     }
 

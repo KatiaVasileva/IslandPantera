@@ -21,6 +21,15 @@ public class Setting {
             Worm.class, Grass.class
     };
 
+    public static final Class<?>[] HERBIVORES_TYPES = {
+            Horse.class, Duck.class, Rabbit.class, Mouse.class, Deer.class,
+            Boar.class, Eagle.class, Fox.class, Goat.class, Sheep.class, Bull.class, Boa.class
+    };
+
+    public static final Class<?>[] HERBIVORES_TYPES_THAT_EAT_WORMS = {
+            Duck.class, Mouse.class
+    };
+
     private Setting() {
     }
 

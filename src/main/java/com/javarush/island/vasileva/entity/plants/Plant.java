@@ -2,6 +2,7 @@ package com.javarush.island.vasileva.entity.plants;
 
 import com.javarush.island.vasileva.Island;
 import com.javarush.island.vasileva.Location;
+import com.javarush.island.vasileva.api.interfaces.Eatable;
 import com.javarush.island.vasileva.entity.Organism;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @Setter
-public abstract class Plant extends Organism {
+public abstract class Plant extends Organism implements Eatable {
     private Location location;
 
     public Plant() {

@@ -2,7 +2,7 @@ package com.javarush.island.vasileva.util;
 
 import com.javarush.island.vasileva.Island;
 import com.javarush.island.vasileva.Location;
-import com.javarush.island.vasileva.SpeciesCharacteristics;
+import com.javarush.island.vasileva.api.annotations.SpeciesCharacteristics;
 import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.Animal;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;

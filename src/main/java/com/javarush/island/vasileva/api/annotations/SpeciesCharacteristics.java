@@ -1,4 +1,4 @@
-package com.javarush.island.vasileva;
+package com.javarush.island.vasileva.api.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

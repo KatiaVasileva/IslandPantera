@@ -1,6 +1,6 @@
 package com.javarush.island.vasileva.entity.animals.herbivores;
 
-import com.javarush.island.vasileva.SpeciesCharacteristics;
+import com.javarush.island.vasileva.api.annotations.SpeciesCharacteristics;
 import com.javarush.island.vasileva.entity.animals.Herbivore;
 
 @SpeciesCharacteristics(name = "Worm", weight = 0.01, maxPerCell = 1000, image = "\uD83D\uDC1B")
