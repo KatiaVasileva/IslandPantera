@@ -25,8 +25,5 @@ public class Herbivore extends Animal implements Eatable {
 //        System.out.println("Herbivore is reproducing");
     }
 
-    @Override
-    public void move() {
-//        System.out.println("Herbivore is moving");
-    }
+
 }

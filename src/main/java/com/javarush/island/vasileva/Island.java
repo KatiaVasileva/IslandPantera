@@ -18,8 +18,12 @@ import static com.javarush.island.vasileva.util.Statistics.printStatistics;
 @Setter
 public class Island {
     private final Location[][] grid;
+    private final int width = WIDTH;
+    private final int height = HEIGHT;
+    
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(CORE_POOL_SIZE);
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_NUMBER);
+    static int counter;
 
     public Island(int width, int height) {
         grid = new Location[width][height];
@@ -39,7 +43,7 @@ public class Island {
 
     public void startSimulation(long tickDuration) {
         scheduledExecutorService.scheduleWithFixedDelay(this::processAnimals, 0, tickDuration, TimeUnit.MILLISECONDS);
-        scheduledExecutorService.scheduleWithFixedDelay(this::getStatistics, 0, tickDuration * 5, TimeUnit.MILLISECONDS);
+        scheduledExecutorService.scheduleWithFixedDelay(this::getStatistics, 0, tickDuration, TimeUnit.MILLISECONDS);
     }
 
     public void processAnimals() {
@@ -50,7 +54,7 @@ public class Island {
                         if (animal.isALive()) {
                             animal.eat();
                             animal.reproduce();
-                            animal.move();
+                            animal.move(this);
                         }
                     });
                 }
@@ -65,6 +69,7 @@ public class Island {
                 totalAnimals += location.getAnimals().size();
             }
         }
+        System.out.println(counter++);
         printStatistics(totalAnimals, this);
     }
 

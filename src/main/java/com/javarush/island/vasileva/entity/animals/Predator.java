@@ -23,8 +23,5 @@ public class Predator extends Animal {
 //        System.out.println("Predator is reproducing");
     }
 
-    @Override
-    public void move() {
-//        System.out.println("Predator is moving");
-    }
+
 }

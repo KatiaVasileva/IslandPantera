@@ -4,6 +4,8 @@ import com.javarush.island.vasileva.Island;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.lang.reflect.InvocationTargetException;
+
 @Getter
 @Setter
 public abstract class Organism {
@@ -23,5 +25,5 @@ public abstract class Organism {
         this.image = image;
     }
 
-    public abstract void placeOrganisms(Island island);
+    public abstract void placeOrganisms(Island island) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException;
 }

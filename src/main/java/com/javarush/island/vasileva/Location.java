@@ -38,4 +38,8 @@ public class Location {
     public synchronized List<Plant> getPlants() {
         return new ArrayList<>(plants);
     }
+
+    public synchronized void removeAnimal(Animal animal) {
+        animals.remove(animal);
+    }
 }

@@ -11,9 +11,11 @@ import java.lang.reflect.InvocationTargetException;
 public class Setting {
     public static final int CORE_POOL_SIZE = 3;
     public static final int THREAD_NUMBER = 20;
-    public static final int WIDTH = 100;
-    public static final int HEIGHT = 20;
     public static final int TICK_DURATION = 1000;
+
+    public static final int WIDTH = 10;
+    public static final int HEIGHT = 10;
+    public static final int[][] DIRECTIONS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     public static final Class<?>[] TYPES = {
             Wolf.class, Bear.class, Horse.class, Duck.class, Rabbit.class, Mouse.class, Deer.class,
@@ -36,6 +38,7 @@ public class Setting {
     public static void init(Island island) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         for (Class<?> type : TYPES) {
             Organism org = (Organism) type.getConstructor().newInstance();
+            org.placeOrganisms(island);
             org.placeOrganisms(island);
         }
     }
