@@ -2,6 +2,8 @@ package com.javarush.island.vasileva;
 
 import com.javarush.island.vasileva.config.Setting;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
+import com.javarush.island.vasileva.view.ConsoleRenderer;
+
 import java.lang.reflect.InvocationTargetException;
 
 public class ConsoleRunner {
@@ -11,6 +13,18 @@ public class ConsoleRunner {
         Island island = new Island(Setting.WIDTH, Setting.HEIGHT);
 
         Setting.init(island);
+
+        ConsoleRenderer consoleRenderer = new ConsoleRenderer(island);
+        consoleRenderer.setUseSymbols(true);
+        consoleRenderer.setUseColors(true);
+
+        System.out.println("Начальная конфигурация острова:");
+        consoleRenderer.render();
+
+        System.out.println("\nЗапуск симуляции... (нажмите Ctrl+C для остановки)");
+
+        island.initRenderer(consoleRenderer);
+
 
         for (int i = 0; i < Setting.WIDTH; i++) {
             for (int j = 0; j < Setting.HEIGHT; j++) {

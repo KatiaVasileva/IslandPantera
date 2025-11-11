@@ -19,8 +19,8 @@ import java.util.List;
 public class Statistics {
     private Statistics() {}
 
-    public static void printStatistics(int totalAnimals, Island island) {
-        System.out.println("Total animals: " + totalAnimals +
+    public static void printStatistics(int totalAnimals, int totalPlants, int tickCounter, Island island) {
+        System.out.println("\n--- ТАКТ " + tickCounter + "---\n" + "Total animals: " + totalAnimals + " - Total plants: " + totalPlants +
                 "\n" + getAnimalImage2(Wolf.class) + " - " + countAnimalsBySpecies(Wolf.class, island) +
                 " | " + getAnimalImage(Boa.class) + " - " + countAnimalsBySpecies(Boa.class, island) +
                 " | " + getAnimalImage(Bear.class) + " - " + countAnimalsBySpecies(Bear.class, island) +
