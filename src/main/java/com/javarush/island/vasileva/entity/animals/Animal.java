@@ -2,6 +2,7 @@ package com.javarush.island.vasileva.entity.animals;
 
 import com.javarush.island.vasileva.Island;
 import com.javarush.island.vasileva.Location;
+import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.entity.Organism;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,28 +15,22 @@ import static com.javarush.island.vasileva.config.Setting.*;
 @Getter
 @Setter
 public abstract class Animal extends Organism {
-    private int speed;
-    private double foodRequired;
     private Location location;
-
-    public Animal() {
-    }
-
-    public Animal(String name, double weight, int maxPerCell, int speed, double foodRequired, String image) {
-        super(name, weight, maxPerCell, image);
-        this.speed = speed;
-        this.foodRequired = foodRequired;
-    }
 
     @Override
     public void placeOrganisms(Island island) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        int count = ThreadLocalRandom.current().nextInt(1, this.getMaxPerCell());
-        int startX = (int) (Math.random() * island.getWidth());
-        int startY = (int) (Math.random() * island.getHeight());
+        OrganismData data = getData(this);
+        int maxPerCell = data.maxPerCell();
+
+        int count = ThreadLocalRandom.current().nextInt(1, maxPerCell + 1);
+        int startX = ThreadLocalRandom.current().nextInt(island.getWidth());
+        int startY = ThreadLocalRandom.current().nextInt(island.getHeight());
         for (int i = 0; i < count; i++) {
             Location location = island.getLocation(startX, startY);
             if (location != null) {
-                location.addAnimal(this.getClass().getConstructor().newInstance());
+                Animal animal = this.getClass().getConstructor().newInstance();
+                location.addAnimal(animal);
+                animal.setLocation(location);
             }
         }
     }
@@ -45,11 +40,13 @@ public abstract class Animal extends Organism {
     public abstract void reproduce();
 
     public void move(Island island) {
+        OrganismData data = getData(this);
+
         Location currentLocation = getLocation();
         if (currentLocation == null) return;
 
-        Location newLocation = getNewRandomLocation(island, currentLocation);
-        if (newLocation == null || newLocation.getAnimals().size() >= this.getMaxPerCell()) return;
+        Location newLocation = getNewRandomLocation(island, currentLocation, data);
+        if (newLocation == null || newLocation.getAnimals().size() >= data.maxPerCell()) return;
         if (currentLocation == newLocation) return;
 
         Location firstLock = (currentLocation.getX() < newLocation.getX()) ? currentLocation : newLocation;
@@ -67,16 +64,15 @@ public abstract class Animal extends Organism {
         }
     }
 
-    public Location getNewRandomLocation(Island island, Location currentLocation) {
+    public Location getNewRandomLocation(Island island, Location currentLocation, OrganismData data) {
         int[] direction = DIRECTIONS[ThreadLocalRandom.current().nextInt(4)];
 
-        int newX = currentLocation.getX() + (direction[0] * ThreadLocalRandom.current().nextInt( this.speed + 1));
-        int newY = currentLocation.getY() + (direction[1] * ThreadLocalRandom.current().nextInt( this.speed + 1));
+        int newX = currentLocation.getX() + (direction[0] * ThreadLocalRandom.current().nextInt( data.speed() + 1));
+        int newY = currentLocation.getY() + (direction[1] * ThreadLocalRandom.current().nextInt( data.speed() + 1));
 
         if (newX < 0 || newX > island.getWidth() || newY < 0 || newY > island.getHeight()) {
             return currentLocation;
         }
         return island.getLocation(newX, newY);
     }
-
 }

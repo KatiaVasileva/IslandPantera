@@ -1,6 +1,7 @@
 package com.javarush.island.vasileva.config;
 
 import com.javarush.island.vasileva.Island;
+import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
@@ -32,7 +33,33 @@ public class Setting {
             Duck.class, Mouse.class
     };
 
+    public static final String WOLF_IMAGE = "\uD83D\uDC3A";
+    public static final String BOA_IMAGE = "\uD83D\uDC0D";
+    public static final String BEAR_IMAGE = "\uD83D\uDC3B";
+    public static final String EAGLE_IMAGE = "\uD83E\uDD85";
+    public static final String BOAR_IMAGE = "\uD83D\uDC17";
+    public static final String FOX_IMAGE = "\uD83E\uDD8A";
+    public static final String HORSE_IMAGE = "\uD83D\uDC0E";
+    public static final String RABBIT_IMAGE = "\uD83D\uDC07";
+    public static final String BULL_IMAGE = "\uD83D\uDC03";
+    public static final String DEER_IMAGE = "\uD83E\uDD8C";
+    public static final String GOAT_IMAGE = "\uD83D\uDC10";
+    public static final String MOUSE_IMAGE = "\uD83D\uDC01";
+    public static final String SHEEP_IMAGE = "\uD83D\uDC11";
+    public static final String DUCK_IMAGE = "\uD83E\uDD86";
+    public static final String WORM_IMAGE = "\uD83D\uDC1B";
+    public static final String GRASS_IMAGE = "\uD83C\uDF3F";
+
     private Setting() {
+    }
+
+    public static OrganismData getData(Organism organism) {
+        OrganismData data = organism.getClass().getAnnotation(OrganismData.class);
+        if (data == null) {
+            throw new RuntimeException("Класс " + organism.getClass().getName() +
+                    " не имеет аннотации @OrganismData");
+        }
+        return data;
     }
 
     public static void init(Island island) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {

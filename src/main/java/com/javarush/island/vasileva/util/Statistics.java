@@ -2,13 +2,14 @@ package com.javarush.island.vasileva.util;
 
 import com.javarush.island.vasileva.Island;
 import com.javarush.island.vasileva.Location;
-import com.javarush.island.vasileva.api.annotations.SpeciesCharacteristics;
+import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.Animal;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
 import com.javarush.island.vasileva.entity.plants.Plant;
+import com.javarush.island.vasileva.view.SymbolMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -20,7 +21,7 @@ public class Statistics {
 
     public static void printStatistics(int totalAnimals, Island island) {
         System.out.println("Total animals: " + totalAnimals +
-                "\n" + getAnimalImage(Wolf.class) + " - " + countAnimalsBySpecies(Wolf.class, island) +
+                "\n" + getAnimalImage2(Wolf.class) + " - " + countAnimalsBySpecies(Wolf.class, island) +
                 " | " + getAnimalImage(Boa.class) + " - " + countAnimalsBySpecies(Boa.class, island) +
                 " | " + getAnimalImage(Bear.class) + " - " + countAnimalsBySpecies(Bear.class, island) +
                 " | " + getAnimalImage(Eagle.class) + " - " + countAnimalsBySpecies(Eagle.class,  island) +
@@ -45,7 +46,7 @@ public class Statistics {
                 List<Animal> animals = location.getAnimals();
                 for (Animal animal : animals) {
                     Annotation[] annotations = annotatedElement.getAnnotations();
-                    if (animal.isALive() && animal.getClass().getSimpleName().equals(((SpeciesCharacteristics) annotations[0]).name())) {
+                    if (animal.isALive() && animal.getClass().getSimpleName().equals(((OrganismData) annotations[0]).name())) {
                         animalsBySpecies.add(animal);
                     }
                 }
@@ -61,7 +62,7 @@ public class Statistics {
                 List<Plant> plants = location.getPlants();
                 for (Plant plant : plants) {
                     Annotation[] annotations = annotatedElement.getAnnotations();
-                    if (plant.isALive() && plant.getClass().getSimpleName().equals(((SpeciesCharacteristics) annotations[0]).name())) {
+                    if (plant.isALive() && plant.getClass().getSimpleName().equals(((OrganismData) annotations[0]).name())) {
                         plantsBySpecies.add(plant);
                     }
                 }
@@ -74,10 +75,15 @@ public class Statistics {
         String image = "";
         Annotation[] annotations = speciesClass.getAnnotations();
         for (Annotation annotation : annotations) {
-            if (annotation instanceof SpeciesCharacteristics speciesCharacteristics) {
-                image = speciesCharacteristics.image();
+            if (annotation instanceof OrganismData organismData) {
+                image = organismData.image();
             }
         }
         return image;
+    }
+
+    public static String getAnimalImage2(Class<? extends Organism> organismClass) {
+        return SymbolMap.getSymbol(organismClass);
+
     }
 }

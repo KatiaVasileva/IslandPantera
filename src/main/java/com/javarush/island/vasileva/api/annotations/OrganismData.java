@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface SpeciesCharacteristics {
+public @interface OrganismData {
     String name();
     double weight();
     int speed() default 0;
