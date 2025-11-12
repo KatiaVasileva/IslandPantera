@@ -9,32 +9,32 @@ import lombok.Setter;
 
 import java.util.List;
 
+import static com.javarush.island.vasileva.config.Setting.*;
+
 @Getter
 @Setter
 public class ConsoleRenderer {
     private final Island island;
     private boolean useSymbols = true;
-    private boolean useColors = true;
-
 
     public ConsoleRenderer(Island island) {
         this.island = island;
     }
 
     public void render() {
-        int width = island.getWidth();
-        int height = island.getHeight();
 
-        System.out.println("\n!" + "-".repeat(width * 4 + 1));
+        System.out.println("\n+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
 
-        for (int x = 0; x < height; x++) {
-            for (int y = 0; y < width; y++) {
+        for (int x = 0; x < SHOW_HEIGHT; x++) {
+            System.out.print("|");
+            for (int y = 0; y < SHOW_WIDTH; y++) {
                 Location location = island.getLocation(x, y);
                 String cellContent = renderCell(location);
-                System.out.printf("|%s", cellContent);
+                System.out.print(cellContent);
+                System.out.print("|");
             }
-            System.out.println("|");
-            System.out.println("-".repeat(width * 4 + 1));
+            System.out.println();
+            System.out.println("+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
         }
     }
 
@@ -43,7 +43,7 @@ public class ConsoleRenderer {
         List<Plant> plants = loc.getPlants();
 
         if (animals.isEmpty() && plants.isEmpty()) {
-            return "   ";
+            return " ".repeat(CELL_WIDTH);
         }
 
         String symbol;
@@ -54,17 +54,13 @@ public class ConsoleRenderer {
             symbol = useSymbols ? SymbolMap.getSymbol(plants.getFirst()) : SymbolMap.getAbbrev(plants.getFirst());
         }
 
-        String coloredSymbol = symbol;
-        if (useColors) {
-            if (!animals.isEmpty()) {
-                coloredSymbol = ColorScheme.ANIMAL + symbol + ColorScheme.RESET;
-            } else {
-                coloredSymbol = ColorScheme.PLANT + symbol + ColorScheme.RESET;
-            }
+        if (symbol.length() > CELL_WIDTH) {
+            symbol = symbol.substring(0, CELL_WIDTH);
         }
 
-        // Доводим до 3 символов (с отступами)
-        return String.format("%-10s", coloredSymbol);
+        return String.format("%-" + CELL_WIDTH + "s", symbol);
+
+
     }
 
 }

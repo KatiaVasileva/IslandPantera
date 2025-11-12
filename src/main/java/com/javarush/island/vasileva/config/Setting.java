@@ -16,6 +16,10 @@ public class Setting {
 
     public static final int WIDTH = 10;
     public static final int HEIGHT = 10;
+    public static final int SHOW_WIDTH = 10;
+    public static final int SHOW_HEIGHT = 10;
+    public static final int CELL_WIDTH = 5;
+    public static final int ORGANISM_PLACEMENT_CYCLES = 2;
     public static final int[][] DIRECTIONS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     public static final Class<?>[] TYPES = {
@@ -65,7 +69,6 @@ public class Setting {
     public static void init(Island island) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         for (Class<?> type : TYPES) {
             Organism org = (Organism) type.getConstructor().newInstance();
-            org.placeOrganisms(island);
             org.placeOrganisms(island);
         }
     }

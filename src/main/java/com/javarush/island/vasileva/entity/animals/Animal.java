@@ -7,7 +7,6 @@ import com.javarush.island.vasileva.entity.Organism;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.javarush.island.vasileva.config.Setting.*;
@@ -16,24 +15,6 @@ import static com.javarush.island.vasileva.config.Setting.*;
 @Setter
 public abstract class Animal extends Organism {
     private Location location;
-
-    @Override
-    public void placeOrganisms(Island island) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        OrganismData data = getData(this);
-        int maxPerCell = data.maxPerCell();
-
-        int count = ThreadLocalRandom.current().nextInt(1, maxPerCell + 1);
-        int startX = ThreadLocalRandom.current().nextInt(island.getWidth());
-        int startY = ThreadLocalRandom.current().nextInt(island.getHeight());
-        for (int i = 0; i < count; i++) {
-            Location location = island.getLocation(startX, startY);
-            if (location != null) {
-                Animal animal = this.getClass().getConstructor().newInstance();
-                location.addAnimal(animal);
-                animal.setLocation(location);
-            }
-        }
-    }
 
     public abstract void eat();
 

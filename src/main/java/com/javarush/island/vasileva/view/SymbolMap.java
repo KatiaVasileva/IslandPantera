@@ -32,22 +32,22 @@ public class SymbolMap {
         SYMBOLS.put(Grass.class, GRASS_IMAGE);
 
 
-        ABBREVS.put(Wolf.class, "W");
-        ABBREVS.put(Boa.class, "B");
-        ABBREVS.put(Fox.class, "F");
-        ABBREVS.put(Bear.class, "Br");
-        ABBREVS.put(Eagle.class, "E");
-        ABBREVS.put(Horse.class, "H");
-        ABBREVS.put(Deer.class, "D");
-        ABBREVS.put(Rabbit.class, "Rb");
-        ABBREVS.put(Mouse.class, "M");
-        ABBREVS.put(Goat.class, "Gt");
-        ABBREVS.put(Sheep.class, "Sh");
-        ABBREVS.put(Boar.class, "Bo");
-        ABBREVS.put(Bull.class, "Bu");
-        ABBREVS.put(Duck.class, "Dk");
-        ABBREVS.put(Worm.class, "Cp");
-        ABBREVS.put(Grass.class, "P");
+        ABBREVS.put(Wolf.class, "В");
+        ABBREVS.put(Boa.class, "Уд");
+        ABBREVS.put(Fox.class, "Лис");
+        ABBREVS.put(Bear.class, "Мед");
+        ABBREVS.put(Eagle.class, "Ор");
+        ABBREVS.put(Horse.class, "Лош");
+        ABBREVS.put(Deer.class, "Ол");
+        ABBREVS.put(Rabbit.class, "Кр");
+        ABBREVS.put(Mouse.class, "М");
+        ABBREVS.put(Goat.class, "Коз");
+        ABBREVS.put(Sheep.class, "Овц");
+        ABBREVS.put(Boar.class, "Каб");
+        ABBREVS.put(Bull.class, "Буй");
+        ABBREVS.put(Duck.class, "Ут");
+        ABBREVS.put(Worm.class, "Гус");
+        ABBREVS.put(Grass.class, "Тр");
     }
 
     public static String getSymbol(Object obj) {
@@ -60,5 +60,9 @@ public class SymbolMap {
 
     public static String getAbbrev(Object obj) {
         return ABBREVS.getOrDefault(obj.getClass(), "?");
+    }
+
+    public static String getAbbrev(Class<?> clazz) {
+        return ABBREVS.getOrDefault(clazz, "?");
     }
 }

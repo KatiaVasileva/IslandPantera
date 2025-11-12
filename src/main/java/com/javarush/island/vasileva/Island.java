@@ -28,9 +28,9 @@ public class Island {
     private int tickCounter = 0;
 
     public Island(int width, int height) {
-        grid = new Location[width][height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        grid = new Location[height][width];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 grid[i][j] = new Location(i, j);
             }
         }
@@ -82,9 +82,7 @@ public class Island {
         if (consoleRenderer != null) {
             consoleRenderer.render();
         }
-
         tickCounter++;
-
     }
 
 }

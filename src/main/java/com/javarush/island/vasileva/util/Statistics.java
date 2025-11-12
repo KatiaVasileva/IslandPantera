@@ -16,27 +16,29 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.javarush.island.vasileva.view.SymbolMap.getAbbrev;
+
 public class Statistics {
     private Statistics() {}
 
     public static void printStatistics(int totalAnimals, int totalPlants, int tickCounter, Island island) {
         System.out.println("\n--- ТАКТ " + tickCounter + "---\n" + "Total animals: " + totalAnimals + " - Total plants: " + totalPlants +
-                "\n" + getAnimalImage2(Wolf.class) + " - " + countAnimalsBySpecies(Wolf.class, island) +
-                " | " + getAnimalImage(Boa.class) + " - " + countAnimalsBySpecies(Boa.class, island) +
-                " | " + getAnimalImage(Bear.class) + " - " + countAnimalsBySpecies(Bear.class, island) +
-                " | " + getAnimalImage(Eagle.class) + " - " + countAnimalsBySpecies(Eagle.class,  island) +
-                " | " + getAnimalImage(Boar.class) + " - " + countAnimalsBySpecies(Boar.class, island) +
-                " | " + getAnimalImage(Fox.class) + " - " + countAnimalsBySpecies(Fox.class, island) +
-                " | " + getAnimalImage(Horse.class) + " - " + countAnimalsBySpecies(Horse.class, island) +
-                " | " + getAnimalImage(Rabbit.class) + " - " + countAnimalsBySpecies(Rabbit.class, island) +
-                " | " + getAnimalImage(Bull.class) + " - " + countAnimalsBySpecies(Bull.class, island) +
-                " | " + getAnimalImage(Deer.class) + " - " + countAnimalsBySpecies(Deer.class, island) +
-                " | " + getAnimalImage(Goat.class) + " - " + countAnimalsBySpecies(Goat.class, island) +
-                " | " + getAnimalImage(Mouse.class) + " - " + countAnimalsBySpecies(Mouse.class, island) +
-                " | " + getAnimalImage(Sheep.class) + " - " + countAnimalsBySpecies(Sheep.class, island) +
-                " | " + getAnimalImage(Duck.class) + " - " + countAnimalsBySpecies(Duck.class, island) +
-                " | " + getAnimalImage(Worm.class) + " - " + countAnimalsBySpecies(Worm.class, island) +
-                " | " + getAnimalImage(Grass.class) + " - " + countPlantsBySpecies(Grass.class, island));
+                "\n" + getAnimalImage2(Wolf.class) + " (" + getAbbrev(Wolf.class) + ") - " + countAnimalsBySpecies(Wolf.class, island) +
+                " | " + getAnimalImage(Boa.class) + " (" + getAbbrev(Boa.class) + ") - " + countAnimalsBySpecies(Boa.class, island) +
+                " | " + getAnimalImage(Bear.class) + " (" + getAbbrev(Bear.class) + ") - " + countAnimalsBySpecies(Bear.class, island) +
+                " | " + getAnimalImage(Eagle.class) + " (" + getAbbrev(Eagle.class) + ") - " + countAnimalsBySpecies(Eagle.class,  island) +
+                " | " + getAnimalImage(Boar.class) + " (" + getAbbrev(Boar.class) + ") - " + countAnimalsBySpecies(Boar.class, island) +
+                " | " + getAnimalImage(Fox.class) + " (" + getAbbrev(Fox.class) + ") - " + countAnimalsBySpecies(Fox.class, island) +
+                " | " + getAnimalImage(Horse.class) + " (" + getAbbrev(Horse.class) + ") - " + countAnimalsBySpecies(Horse.class, island) +
+                " | " + getAnimalImage(Rabbit.class) + " (" + getAbbrev(Rabbit.class) + ") - " + countAnimalsBySpecies(Rabbit.class, island) +
+                " \n" + getAnimalImage(Bull.class) + " (" + getAbbrev(Bull.class) + ") - " + countAnimalsBySpecies(Bull.class, island) +
+                " | " + getAnimalImage(Deer.class) + " (" + getAbbrev(Deer.class) + ") - " + countAnimalsBySpecies(Deer.class, island) +
+                " | " + getAnimalImage(Goat.class) + " (" + getAbbrev(Goat.class) + ") - " + countAnimalsBySpecies(Goat.class, island) +
+                " | " + getAnimalImage(Mouse.class) + " (" + getAbbrev(Mouse.class) + ") - " + countAnimalsBySpecies(Mouse.class, island) +
+                " | " + getAnimalImage(Sheep.class) + " (" + getAbbrev(Sheep.class) + ") - " + countAnimalsBySpecies(Sheep.class, island) +
+                " | " + getAnimalImage(Duck.class) + " (" + getAbbrev(Duck.class) + ") - " + countAnimalsBySpecies(Duck.class, island) +
+                " | " + getAnimalImage(Worm.class) + " (" + getAbbrev(Worm.class) + ") - " + countAnimalsBySpecies(Worm.class, island) +
+                " | " + getAnimalImage(Grass.class) + " (" + getAbbrev(Grass.class) + ") - " + countPlantsBySpecies(Grass.class, island));
     }
 
     public static int countAnimalsBySpecies(AnnotatedElement annotatedElement, Island island) {
