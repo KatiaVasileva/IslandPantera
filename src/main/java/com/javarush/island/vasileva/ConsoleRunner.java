@@ -26,5 +26,6 @@ public class ConsoleRunner {
         island.initRenderer(consoleRenderer);
 
         island.startSimulation(Setting.TICK_DURATION);
+
     }
 }
