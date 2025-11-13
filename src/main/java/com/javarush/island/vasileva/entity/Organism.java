@@ -18,7 +18,7 @@ import static com.javarush.island.vasileva.config.Setting.getData;
 @Setter
 public abstract class Organism {
     private transient OrganismData organismData;
-    private boolean isALive = true;
+    protected boolean isALive = true;
 
     public Organism() {
         this.organismData = this.getClass().getAnnotation(OrganismData.class);

@@ -14,13 +14,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javarush.island.vasileva.config.Setting.*;
 import static com.javarush.island.vasileva.config.Setting.THREAD_NUMBER;
-import static com.javarush.island.vasileva.util.Statistics.printStatistics;
 
 public class SimulationEngine {
     private ConsoleRenderer consoleRenderer;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(CORE_POOL_SIZE);
     private final ExecutorService workerPool = Executors.newFixedThreadPool(THREAD_NUMBER);
     private final AtomicInteger tickCounter = new AtomicInteger(0);
+    private final StatisticsService statisticsService = new StatisticsService();
     @Setter
     private Island island;
 
@@ -57,22 +57,13 @@ public class SimulationEngine {
     }
 
     private void getStatistics() {
-        int totalAnimals = 0;
-        int totalPlants = 0;
-        if (island != null) {
-            for (Location[] row : island.getGrid()) {
-                for (Location location : row) {
-                    totalAnimals += location.getAnimals().size();
-                    totalPlants += location.getPlants().size();
-                }
-            }
-        }
-        int currentTick = tickCounter.incrementAndGet();
-        printStatistics(totalAnimals, totalPlants, currentTick, island);
+            int currentTick = tickCounter.incrementAndGet();
 
-        if (consoleRenderer != null) {
-            consoleRenderer.render();
-        }
+            statisticsService.printReport(island, currentTick);
+
+            if (consoleRenderer != null) {
+                consoleRenderer.render();
+            }
     }
 
     public void shutdown() {
