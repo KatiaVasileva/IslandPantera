@@ -40,9 +40,9 @@ public class ConsoleRenderer {
     }
 
     private String renderCell(Location loc) {
+        List<Organism> organisms = new ArrayList<>();
         List<Animal> animals = loc.getAnimals();
         List<Plant> plants = loc.getPlants();
-        List<Organism> organisms = new ArrayList<>();
         organisms.addAll(animals);
         organisms.addAll(plants);
 
@@ -50,25 +50,31 @@ public class ConsoleRenderer {
             return " ".repeat(CELL_WIDTH);
         }
 
-        Map<Class<?>, Integer> counts = new HashMap<>();
-        for (Organism org : organisms) {
-            if (counts.containsKey(org.getClass())) {
-                counts.put(org.getClass(), counts.get(org.getClass()) + 1);
-            } else {
-                counts.put(org.getClass(), 1);
-            }
-        }
-        Class<?> maxAnimal = counts.entrySet()
-                .stream()
-                .max(Comparator.comparingInt(Map.Entry::getValue))
-                .map(Map.Entry::getKey)
-                .orElse(null);
-        String symbol = useSymbols ? SymbolMap.getSymbol(maxAnimal) : SymbolMap.getAbbrev(maxAnimal);
+        String symbol = getMaxOrganismForCellRendering(organisms);
 
         if (symbol.length() > CELL_WIDTH) {
             symbol = symbol.substring(0, CELL_WIDTH);
         }
-
         return String.format("%-" + CELL_WIDTH + "s", symbol);
+    }
+
+    private String getMaxOrganismForCellRendering(List<Organism> organisms) {
+        Map<Class<?>, Integer> organismsCount = new HashMap<>();
+
+        for (Organism org : organisms) {
+            if (organismsCount.containsKey(org.getClass())) {
+                organismsCount.put(org.getClass(), organismsCount.get(org.getClass()) + 1);
+            } else {
+                organismsCount.put(org.getClass(), 1);
+            }
+        }
+
+        Class<?> maxAnimal = organismsCount.entrySet()
+                .stream()
+                .max(Comparator.comparingInt(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        return useSymbols ? SymbolMap.getSymbol(maxAnimal) : SymbolMap.getAbbrev(maxAnimal);
     }
 }
