@@ -19,7 +19,7 @@ import static com.javarush.island.vasileva.util.Statistics.printStatistics;
 public class SimulationEngine {
     private ConsoleRenderer consoleRenderer;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(CORE_POOL_SIZE);
-    private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_NUMBER);
+    private final ExecutorService workerPool = Executors.newFixedThreadPool(THREAD_NUMBER);
     private final AtomicInteger tickCounter = new AtomicInteger(0);
     @Setter
     private Island island;
@@ -44,7 +44,7 @@ public class SimulationEngine {
         for (Location[] row : island.getGrid()) {
             for (Location location : row) {
                 for (Animal animal : location.getAnimals()) {
-                    executorService.submit(() -> {
+                    workerPool.submit(() -> {
                         if (animal.isALive()) {
                             animal.eat();
                             animal.reproduce();
@@ -75,4 +75,21 @@ public class SimulationEngine {
         }
     }
 
+    public void shutdown() {
+        workerPool.shutdown();
+        scheduledExecutorService.shutdown();
+
+        try {
+            if (!workerPool.awaitTermination(60, TimeUnit.SECONDS)) {
+                workerPool.shutdownNow();
+            }
+            if (!scheduledExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                scheduledExecutorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            workerPool.shutdownNow();
+            scheduledExecutorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
 }

@@ -14,9 +14,9 @@ public class Setting {
     public static final int THREAD_NUMBER = 20;
     public static final int TICK_DURATION = 1000;
 
-    public static final int WIDTH = 20;
-    public static final int HEIGHT = 20;
-    public static final int SHOW_WIDTH = 20;
+    public static final int WIDTH = 10;
+    public static final int HEIGHT = 10;
+    public static final int SHOW_WIDTH = 10;
     public static final int SHOW_HEIGHT = 10;
     public static final int CELL_WIDTH = 5;
     public static final int ORGANISM_PLACEMENT_CYCLES = 1;
