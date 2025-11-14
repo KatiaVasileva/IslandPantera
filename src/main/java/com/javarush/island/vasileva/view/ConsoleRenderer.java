@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.javarush.island.vasileva.config.Setting.*;
 
@@ -17,40 +18,53 @@ import static com.javarush.island.vasileva.config.Setting.*;
 public class ConsoleRenderer {
     private final Island island;
     private boolean useSymbols = true;
+    private final ReentrantLock renderLock = new ReentrantLock();
 
     public ConsoleRenderer(Island island) {
         this.island = island;
     }
 
     public void render() {
+        renderLock.lock();
+        try {
+            System.out.println("\n+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
 
-        System.out.println("\n+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
-
-        for (int x = 0; x < SHOW_HEIGHT; x++) {
-            System.out.print("|");
-            for (int y = 0; y < SHOW_WIDTH; y++) {
-                Location location = island.getLocation(x, y);
-                String cellContent = renderCell(location);
-                System.out.print(cellContent);
+            for (int x = 0; x < SHOW_HEIGHT; x++) {
                 System.out.print("|");
+                for (int y = 0; y < SHOW_WIDTH; y++) {
+                    Location location = island.getLocation(x, y);
+                    String cellContent = renderCell(location);
+                    System.out.print(cellContent);
+                    System.out.print("|");
+                }
+                System.out.println();
+                System.out.println("+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
             }
-            System.out.println();
-            System.out.println("+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
+        } finally {
+            renderLock.unlock();
         }
     }
 
     private String renderCell(Location loc) {
-        List<Organism> organisms = new ArrayList<>();
-        List<Animal> animals = loc.getAnimals();
-        List<Plant> plants = loc.getPlants();
-        organisms.addAll(animals);
-        organisms.addAll(plants);
+        List<Organism> livingOrganisms = new ArrayList<>();
 
-        if (organisms.isEmpty()) {
+        for (Animal animal : loc.getAnimals()) {
+            if (animal.isALive()) {
+                livingOrganisms.add(animal);
+            }
+        }
+
+        for (Plant plant : loc.getPlants()) {
+            if (plant.isALive()) {
+                livingOrganisms.add(plant);
+            }
+        }
+
+        if (livingOrganisms.isEmpty()) {
             return " ".repeat(CELL_WIDTH);
         }
 
-        String symbol = getMaxOrganismForCellRendering(organisms);
+        String symbol = getMaxOrganismForCellRendering(livingOrganisms);
 
         if (symbol.length() > CELL_WIDTH) {
             symbol = symbol.substring(0, CELL_WIDTH);
@@ -58,23 +72,22 @@ public class ConsoleRenderer {
         return String.format("%-" + CELL_WIDTH + "s", symbol);
     }
 
+    // Show organism with the maximum number of animals/plants in the location
     private String getMaxOrganismForCellRendering(List<Organism> organisms) {
         Map<Class<?>, Integer> organismsCount = new HashMap<>();
 
         for (Organism org : organisms) {
-            if (organismsCount.containsKey(org.getClass())) {
-                organismsCount.put(org.getClass(), organismsCount.get(org.getClass()) + 1);
-            } else {
-                organismsCount.put(org.getClass(), 1);
-            }
+            organismsCount.merge(org.getClass(), 1, Integer::sum);
         }
 
-        Class<?> maxAnimal = organismsCount.entrySet()
+        Class<?> maxClass = organismsCount.entrySet()
                 .stream()
                 .max(Comparator.comparingInt(Map.Entry::getValue))
                 .map(Map.Entry::getKey)
                 .orElse(null);
 
-        return useSymbols ? SymbolMap.getSymbol(maxAnimal) : SymbolMap.getAbbrev(maxAnimal);
+        return useSymbols
+                ? (maxClass != null ? SymbolMap.getSymbol(maxClass) : " ")
+                : (maxClass != null ? SymbolMap.getAbbrev(maxClass) : " ");
     }
 }

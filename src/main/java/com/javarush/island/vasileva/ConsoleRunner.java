@@ -25,7 +25,7 @@ public class ConsoleRunner {
 
         System.out.println("\nЗапуск симуляции...");
 
-        Thread.sleep(30000);
+        Thread.sleep(300000);
         engine.shutdown();
     }
 }

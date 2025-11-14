@@ -32,10 +32,8 @@ public class SimulationEngine {
         if (island == null) {
             throw new IllegalStateException("Island is not initialized");
         }
-        scheduledExecutorService.scheduleWithFixedDelay(() -> {
-            processAnimals();
-            getStatistics();
-        }, 0, tickDuration, TimeUnit.MILLISECONDS);
+        scheduledExecutorService.scheduleWithFixedDelay(this::processAnimals, 0, tickDuration, TimeUnit.MILLISECONDS);
+        scheduledExecutorService.scheduleWithFixedDelay(this::getStatistics, 0, tickDuration, TimeUnit.MILLISECONDS);
     }
 
     public void processAnimals() {

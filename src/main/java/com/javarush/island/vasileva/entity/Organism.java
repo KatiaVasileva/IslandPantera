@@ -5,22 +5,29 @@ import com.javarush.island.vasileva.Location;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.entity.animals.Animal;
 import com.javarush.island.vasileva.entity.plants.Plant;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.javarush.island.vasileva.config.Setting.ORGANISM_PLACEMENT_CYCLES;
 import static com.javarush.island.vasileva.config.Setting.getData;
 
 @Getter
 @Setter
+@EqualsAndHashCode(of = "id")
 public abstract class Organism {
+    private static final AtomicLong ID_COUNTER = new AtomicLong(1);
+
+    private final long id;
     private transient OrganismData organismData;
     protected boolean isALive = true;
 
     public Organism() {
+        this.id = ID_COUNTER.getAndIncrement();
         this.organismData = this.getClass().getAnnotation(OrganismData.class);
         if (organismData == null) {
             throw new RuntimeException("Class " + this.getClass().getSimpleName() + " must have @OrganismData annotation");
@@ -80,4 +87,9 @@ public abstract class Organism {
             counter--;
         }
     }
+
+    public void die() {
+        isALive = false;
+    }
+
 }

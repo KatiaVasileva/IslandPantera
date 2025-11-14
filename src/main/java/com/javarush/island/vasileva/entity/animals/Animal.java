@@ -3,10 +3,15 @@ package com.javarush.island.vasileva.entity.animals;
 import com.javarush.island.vasileva.Island;
 import com.javarush.island.vasileva.Location;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
+import com.javarush.island.vasileva.api.interfaces.Eatable;
+import com.javarush.island.vasileva.config.EatingChances;
 import com.javarush.island.vasileva.entity.Organism;
+import com.javarush.island.vasileva.entity.plants.Plant;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.javarush.island.vasileva.config.Setting.*;
@@ -16,9 +21,64 @@ import static com.javarush.island.vasileva.config.Setting.*;
 public abstract class Animal extends Organism {
     private Location location;
 
-    public abstract void eat();
+    /* ========================== EAT ================================ */
+    public void eat() {
+        Location loc = getLocation();
+        if (loc == null) return;
 
+        List<Eatable> food = collectFood(loc);
+
+        for (Eatable item : food) {
+            if (!canEat(item)) continue;
+
+            synchronized (loc) {
+                synchronized (item) {
+                    if (!isItemAvailable(item)) {
+                        continue;
+                    }
+                    consumeItem(item, loc);
+                    // Восполняем голод
+                    // this.increaseSatiety(10);
+                    return;
+                }
+            }
+        }
+    }
+
+    private List<Eatable> collectFood(Location loc) {
+        List<Eatable> food = new ArrayList<>(loc.getPlants());
+        for (Animal animal : loc.getAnimals()) {
+            if (animal.isALive() && animal instanceof Eatable eatable) {
+                food.add(eatable);
+            }
+        }
+        return food;
+    }
+
+    private boolean canEat(Eatable item) {
+        double chance = EatingChances.getChances(this.getClass(), item.getClass());
+        return chance > 0 && Math.random() < chance;
+    }
+
+    private boolean isItemAvailable(Eatable item) {
+        return ((Organism) item).isALive();
+    }
+
+    private void consumeItem(Eatable item, Location loc) {
+        if (item instanceof Animal prey) {
+            prey.die();
+            loc.removeAnimal(prey);
+        } else if (item instanceof Plant targetPlant) {
+            targetPlant.die();
+            loc.removePlant(targetPlant);
+        }
+    }
+
+    /* ========================== REPRODUCE  ================================ */
     public abstract void reproduce();
+
+
+    /* ========================== MOVE ====================================== */
 
     public void move(Island island) {
         OrganismData data = getData(this);

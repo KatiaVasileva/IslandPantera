@@ -42,4 +42,10 @@ public class Location {
     public synchronized void removeAnimal(Animal animal) {
         animals.remove(animal);
     }
+
+    public synchronized void removePlant(Plant plant) {
+        plants.remove(plant);
+    }
+
+
 }

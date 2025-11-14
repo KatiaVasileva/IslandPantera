@@ -82,7 +82,6 @@ public class EatingChances {
 
     public static double getChances(Class<? extends Animal> animal, Class<? extends Eatable> prey) {
         Map<Class<?>, Double> animalDiet = EATING_CHANCES.get(animal);
-        System.out.println("animalDiet: " + animalDiet);
         if (animalDiet == null || animalDiet.get(prey) == null) {
             return 0;
         }
