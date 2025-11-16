@@ -1,7 +1,5 @@
-package com.javarush.island.vasileva;
+package com.javarush.island.vasileva.entity.map;
 
-import com.javarush.island.vasileva.entity.animals.herbivores.*;
-import com.javarush.island.vasileva.entity.animals.predators.*;
 import lombok.Getter;
 import lombok.Setter;
 

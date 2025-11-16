@@ -1,6 +1,6 @@
 package com.javarush.island.vasileva.service;
 
-import com.javarush.island.vasileva.Island;
+import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.plants.Plant;
 import com.javarush.island.vasileva.statiistics.StatisticsCollector;

@@ -1,6 +1,6 @@
 package com.javarush.island.vasileva.entity.plants;
 
-import com.javarush.island.vasileva.Location;
+import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.api.interfaces.Eatable;
 import com.javarush.island.vasileva.entity.Organism;
 import lombok.Getter;

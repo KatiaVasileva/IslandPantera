@@ -1,5 +1,6 @@
 package com.javarush.island.vasileva;
 
+import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.service.SimulationEngine;
 import com.javarush.island.vasileva.view.ConsoleRenderer;
 

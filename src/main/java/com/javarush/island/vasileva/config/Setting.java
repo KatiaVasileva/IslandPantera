@@ -1,6 +1,6 @@
 package com.javarush.island.vasileva.config;
 
-import com.javarush.island.vasileva.Island;
+import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;

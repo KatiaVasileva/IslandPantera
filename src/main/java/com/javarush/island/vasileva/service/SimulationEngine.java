@@ -1,7 +1,7 @@
 package com.javarush.island.vasileva.service;
 
-import com.javarush.island.vasileva.Island;
-import com.javarush.island.vasileva.Location;
+import com.javarush.island.vasileva.entity.map.Island;
+import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.entity.animals.Animal;
 import com.javarush.island.vasileva.view.ConsoleRenderer;
 import lombok.Setter;

@@ -1,7 +1,7 @@
 package com.javarush.island.vasileva.entity.animals;
 
-import com.javarush.island.vasileva.Island;
-import com.javarush.island.vasileva.Location;
+import com.javarush.island.vasileva.entity.map.Island;
+import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.api.interfaces.Eatable;
 import com.javarush.island.vasileva.config.EatingChances;
@@ -13,6 +13,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 import static com.javarush.island.vasileva.config.Setting.*;
 
@@ -20,6 +21,8 @@ import static com.javarush.island.vasileva.config.Setting.*;
 @Setter
 public abstract class Animal extends Organism {
     private Location location;
+    protected int age = 0;
+    protected volatile boolean hasReproduced = false;
 
     /* ========================== EAT ================================ */
     public void eat() {
@@ -75,7 +78,43 @@ public abstract class Animal extends Organism {
     }
 
     /* ========================== REPRODUCE  ================================ */
-    public abstract void reproduce();
+    public void reproduce() {
+        if (age < 5 || hasReproduced) return; // Минимум возраст и 1 раз за период
+
+        Location loc = getLocation();
+        if (loc == null) return;
+
+        try {
+            if (loc.tryLock(100, TimeUnit.MILLISECONDS)) {
+                try {
+                    if (age < 5 || hasReproduced || !isALive) return;
+                    List<Animal> sameSpecies = loc.getAnimals().stream()
+                            .filter(a -> a.getClass() == this.getClass() && a.isALive)
+                            .toList();
+                    if (sameSpecies.size() >= 2 && sameSpecies.size() < getData(this).maxPerCell()) {
+                        try {
+                            Animal offspring = this.getClass().getDeclaredConstructor().newInstance();
+                            offspring.age = 0;
+                            loc.addAnimal(offspring);
+                            hasReproduced = true;
+                            System.out.printf("%s родил потомка в [%d,%d]%n",
+                                    getData(this).name(), loc.getX(), loc.getY());
+                        } catch (Exception e) {
+                            System.out.println("Ошибка при размножении: " + e.getMessage());
+                        }
+                    }
+                } finally {
+                    loc.unlock();
+                }
+            } else {
+                System.out.printf("Не удалось заблокировать локацию [%d,%d] для размножения%n",
+                        loc.getX(), loc.getY());
+            }
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Поток прерван при попытке размножения");
+        }
+    }
 
 
     /* ========================== MOVE ====================================== */
@@ -92,6 +131,7 @@ public abstract class Animal extends Organism {
         Location[] lockOrder = getLockOrder(currentLocation, newLocation);
 
         performMove(lockOrder[0], lockOrder[1], currentLocation, newLocation);
+        age++;
     }
 
     private Location getNewLocation(Island island, Location currentLocation, OrganismData data) {
