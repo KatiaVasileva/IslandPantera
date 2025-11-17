@@ -13,7 +13,6 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 import static com.javarush.island.vasileva.config.Setting.*;
 
@@ -40,8 +39,8 @@ public abstract class Animal extends Organism {
                         continue;
                     }
                     consumeItem(item, loc);
-                    // Восполняем голод
-                    // this.increaseSatiety(10);
+                    System.out.printf("%s съел %s в [%d,%d]%n",
+                            getData(this).name() + this.getId(), getData((Organism) item).name() + ((Organism) item).getId(), loc.getX(), loc.getY());
                     return;
                 }
             }
@@ -79,43 +78,33 @@ public abstract class Animal extends Organism {
 
     /* ========================== REPRODUCE  ================================ */
     public void reproduce() {
-        if (age < 5 || hasReproduced) return; // Минимум возраст и 1 раз за период
+        if (age < 5 || hasReproduced || !isALive()) return;
 
         Location loc = getLocation();
         if (loc == null) return;
 
-        try {
-            if (loc.tryLock(100, TimeUnit.MILLISECONDS)) {
+        synchronized (loc) {
+            if (age < 5 || hasReproduced || !isALive()) return;
+
+            List<Animal> sameSpecies = loc.getAnimals().stream()
+                    .filter(a -> a.getClass() == this.getClass() && a.isALive())
+                    .toList();
+
+            if (sameSpecies.size() >= 2 && sameSpecies.size() < getData(this).maxPerCell()) {
                 try {
-                    if (age < 5 || hasReproduced || !isALive) return;
-                    List<Animal> sameSpecies = loc.getAnimals().stream()
-                            .filter(a -> a.getClass() == this.getClass() && a.isALive)
-                            .toList();
-                    if (sameSpecies.size() >= 2 && sameSpecies.size() < getData(this).maxPerCell()) {
-                        try {
-                            Animal offspring = this.getClass().getDeclaredConstructor().newInstance();
-                            offspring.age = 0;
-                            loc.addAnimal(offspring);
-                            hasReproduced = true;
-                            System.out.printf("%s родил потомка в [%d,%d]%n",
-                                    getData(this).name(), loc.getX(), loc.getY());
-                        } catch (Exception e) {
-                            System.out.println("Ошибка при размножении: " + e.getMessage());
-                        }
-                    }
-                } finally {
-                    loc.unlock();
+                    Animal offspring = this.getClass().getDeclaredConstructor().newInstance();
+                    offspring.age = 0;
+                    loc.addAnimal(offspring);
+                    hasReproduced = true;
+
+                    System.out.printf("%s родил потомка %s в [%d,%d]%n",
+                            getData(this).name() + this.getId(), getData(offspring).name() + offspring.getId(), loc.getX(), loc.getY());
+                } catch (Exception e) {
+                    System.out.println("Ошибка при размножении: " + e.getMessage());
                 }
-            } else {
-                System.out.printf("Не удалось заблокировать локацию [%d,%d] для размножения%n",
-                        loc.getX(), loc.getY());
             }
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-            System.out.println("Поток прерван при попытке размножения");
         }
     }
-
 
     /* ========================== MOVE ====================================== */
 
