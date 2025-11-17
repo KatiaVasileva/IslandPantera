@@ -1,6 +1,6 @@
 package com.javarush.island.vasileva.config;
 
-import com.javarush.island.vasileva.api.interfaces.Eatable;
+import com.javarush.island.vasileva.api.entity.Eatable;
 import com.javarush.island.vasileva.entity.animals.Animal;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;

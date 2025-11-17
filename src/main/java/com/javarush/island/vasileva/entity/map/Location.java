@@ -7,8 +7,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 @Setter
@@ -18,22 +16,12 @@ public class Location {
     private final List<Animal> animals = new ArrayList<>();
     private final List<Plant> plants = new ArrayList<>();
 
-    private final ReentrantLock lock = new ReentrantLock();
     private final Object animalLock = new Object();
     private final Object plantLock = new Object();
-
 
     public Location(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-        return lock.tryLock(time, unit);
-    }
-
-    public void unlock() {
-        lock.unlock();
     }
 
     public void addAnimal(Animal animal) {

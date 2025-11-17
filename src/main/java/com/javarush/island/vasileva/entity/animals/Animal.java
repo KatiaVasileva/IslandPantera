@@ -1,16 +1,18 @@
 package com.javarush.island.vasileva.entity.animals;
 
+import com.javarush.island.vasileva.api.entity.Eating;
+import com.javarush.island.vasileva.api.entity.Movable;
+import com.javarush.island.vasileva.api.entity.Reproducible;
+import com.javarush.island.vasileva.api.services.FoodService;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
-import com.javarush.island.vasileva.api.interfaces.Eatable;
-import com.javarush.island.vasileva.config.EatingChances;
+import com.javarush.island.vasileva.api.entity.Eatable;
 import com.javarush.island.vasileva.entity.Organism;
-import com.javarush.island.vasileva.entity.plants.Plant;
+import com.javarush.island.vasileva.service.FoodServiceImpl;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,27 +20,29 @@ import static com.javarush.island.vasileva.config.Setting.*;
 
 @Getter
 @Setter
-public abstract class Animal extends Organism {
+public abstract class Animal extends Organism implements Eating, Movable, Reproducible {
+    private FoodService foodService = new FoodServiceImpl();
     private Location location;
     protected int age = 0;
     protected volatile boolean hasReproduced = false;
 
     /* ========================== EAT ================================ */
+    @Override
     public void eat() {
         Location loc = getLocation();
         if (loc == null) return;
 
-        List<Eatable> food = collectFood(loc);
+        List<Eatable> food = foodService.collectFood(loc);
 
         for (Eatable item : food) {
-            if (!canEat(item)) continue;
+            if (!foodService.canEat(this, item)) continue;
 
             synchronized (loc) {
                 synchronized (item) {
-                    if (!isItemAvailable(item)) {
+                    if (!foodService.isItemAvailable(item)) {
                         continue;
                     }
-                    consumeItem(item, loc);
+                    foodService.consumeItem(item, loc);
                     System.out.printf("%s съел %s в [%d,%d]%n",
                             getData(this).name() + this.getId(), getData((Organism) item).name() + ((Organism) item).getId(), loc.getX(), loc.getY());
                     return;
@@ -47,36 +51,8 @@ public abstract class Animal extends Organism {
         }
     }
 
-    private List<Eatable> collectFood(Location loc) {
-        List<Eatable> food = new ArrayList<>(loc.getPlants());
-        for (Animal animal : loc.getAnimals()) {
-            if (animal.isALive() && animal instanceof Eatable eatable) {
-                food.add(eatable);
-            }
-        }
-        return food;
-    }
-
-    private boolean canEat(Eatable item) {
-        double chance = EatingChances.getChances(this.getClass(), item.getClass());
-        return chance > 0 && Math.random() < chance;
-    }
-
-    private boolean isItemAvailable(Eatable item) {
-        return ((Organism) item).isALive();
-    }
-
-    private void consumeItem(Eatable item, Location loc) {
-        if (item instanceof Animal prey) {
-            prey.die();
-            loc.removeAnimal(prey);
-        } else if (item instanceof Plant targetPlant) {
-            targetPlant.die();
-            loc.removePlant(targetPlant);
-        }
-    }
-
     /* ========================== REPRODUCE  ================================ */
+    @Override
     public void reproduce() {
         if (age < 5 || hasReproduced || !isALive()) return;
 
@@ -107,7 +83,7 @@ public abstract class Animal extends Organism {
     }
 
     /* ========================== MOVE ====================================== */
-
+    @Override
     public void move(Island island) {
         OrganismData data = getData(this);
 
