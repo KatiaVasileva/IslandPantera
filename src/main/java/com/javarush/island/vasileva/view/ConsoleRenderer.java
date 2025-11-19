@@ -3,8 +3,6 @@ package com.javarush.island.vasileva.view;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.entity.Organism;
-import com.javarush.island.vasileva.entity.animals.Animal;
-import com.javarush.island.vasileva.entity.plants.Plant;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,15 +46,9 @@ public class ConsoleRenderer {
     private String renderCell(Location loc) {
         List<Organism> livingOrganisms = new ArrayList<>();
 
-        for (Animal animal : loc.getAnimals()) {
-            if (animal.isALive()) {
-                livingOrganisms.add(animal);
-            }
-        }
-
-        for (Plant plant : loc.getPlants()) {
-            if (plant.isALive()) {
-                livingOrganisms.add(plant);
+        for (Organism organism : loc.getOrganisms()) {
+            if (organism.isALive()) {
+                livingOrganisms.add(organism);
             }
         }
 

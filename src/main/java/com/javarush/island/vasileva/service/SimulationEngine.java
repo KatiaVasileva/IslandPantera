@@ -1,11 +1,12 @@
 package com.javarush.island.vasileva.service;
 
+import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
-import com.javarush.island.vasileva.entity.animals.Animal;
 import com.javarush.island.vasileva.view.ConsoleRenderer;
 import lombok.Setter;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,21 +33,24 @@ public class SimulationEngine {
         if (island == null) {
             throw new IllegalStateException("Island is not initialized");
         }
-        scheduledExecutorService.scheduleWithFixedDelay(this::processAnimals, 0, tickDuration, TimeUnit.MILLISECONDS);
+        scheduledExecutorService.scheduleWithFixedDelay(this::processOrganisms, 0, tickDuration, TimeUnit.MILLISECONDS);
         scheduledExecutorService.scheduleWithFixedDelay(this::getStatistics, 0, tickDuration, TimeUnit.MILLISECONDS);
     }
 
-    public void processAnimals() {
+    public void processOrganisms() {
         if (island == null) return;
-
         for (Location[] row : island.getGrid()) {
             for (Location location : row) {
-                for (Animal animal : location.getAnimals()) {
+                for (Organism organism : location.getOrganisms()) {
                     workerPool.submit(() -> {
-                        if (animal.isALive()) {
-                            animal.eat();
-                            animal.reproduce();
-                            animal.move(island);
+                        if (organism.isALive()) {
+                            organism.eat();
+                            try {
+                                organism.reproduce();
+                            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
+                            organism.move(island);
                         }
                     });
                 }

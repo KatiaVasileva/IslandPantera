@@ -1,30 +1,38 @@
 package com.javarush.island.vasileva.entity;
 
+import com.javarush.island.vasileva.api.interfaces.Eatable;
+import com.javarush.island.vasileva.api.interfaces.Eating;
+import com.javarush.island.vasileva.api.interfaces.Movable;
+import com.javarush.island.vasileva.api.interfaces.Reproducible;
+import com.javarush.island.vasileva.config.EatingChances;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
-import com.javarush.island.vasileva.entity.animals.Animal;
-import com.javarush.island.vasileva.entity.plants.Plant;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.javarush.island.vasileva.config.Setting.ORGANISM_PLACEMENT_CYCLES;
-import static com.javarush.island.vasileva.config.Setting.getData;
+import static com.javarush.island.vasileva.config.Setting.*;
+import static com.javarush.island.vasileva.util.Debug.logReproduce;
 
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-public abstract class Organism {
+public abstract class Organism implements Eating, Reproducible, Movable {
     private static final AtomicLong ID_COUNTER = new AtomicLong(1);
 
     private final long id;
+    private Location location;
     private transient OrganismData organismData;
-    protected boolean isALive = true;
+    private boolean isALive = true;
+    protected int age = 0;
+    protected volatile boolean hasReproduced = false;
 
     public Organism() {
         this.id = ID_COUNTER.getAndIncrement();
@@ -72,20 +80,80 @@ public abstract class Organism {
                 Location location = island.getLocation(startX, startY);
                 if (location != null) {
                     Organism organism = this.getClass().getConstructor().newInstance();
-                    if (organism instanceof Animal animal) {
-                        location.addAnimal(animal);
-                        animal.setLocation(location);
-                    }
-                    if (organism instanceof Plant plant) {
-                        location.addPlant(plant);
-                        plant.setLocation(location);
-                    }
-
-
+                    location.addOrganism(organism);
+                    organism.setLocation(location);
                 }
             }
             counter--;
         }
+    }
+
+    protected List<Eatable> findFood() {
+        List<Eatable> food = new ArrayList<>();
+        for (Organism organism : location.getOrganisms()) {
+            if (organism.isALive() && organism instanceof Eatable eatable) {
+                food.add(eatable);
+            }
+        }
+        return food;
+    }
+
+    protected boolean canEat(Eatable item) {
+        double chance = EatingChances.getChances(this.getClass(), item.getClass());
+        return chance > 0 && Math.random() < chance;
+    }
+
+    protected boolean isFoodAvailable(Eatable food) {
+        return ((Organism) food).isALive();
+    }
+
+    protected void consumeFood(Eatable food) {
+        if (food instanceof Organism prey) {
+            prey.die();
+            location.removeOrganism(prey);
+        }
+    }
+
+    protected void performMove(Location firstLock, Location secondLock, Location from, Location to) {
+        synchronized (firstLock) {
+            synchronized (secondLock) {
+                from.removeOrganism(this);
+                to.addOrganism(this);
+                this.setLocation(to);
+            }
+        }
+    }
+
+    protected boolean cannotReproduce() {
+        return age < 5 || hasReproduced || !isALive();
+    }
+
+    protected List<Organism> findPotentialPartners() {
+        return location.getOrganisms().stream()
+                .filter(org ->
+                        org.getClass() == this.getClass() &&
+                                org.isALive()
+                )
+                .toList();
+    }
+
+    protected boolean hasSufficientPartners(List<Organism> partners) {
+        int minPartnersRequired = 2;
+        int maxCapacity = getData(this).maxPerCell();
+
+        return partners.size() >= minPartnersRequired &&
+                partners.size() < maxCapacity;
+    }
+
+    protected void tryReproduce() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Organism offspring = createOffspring();
+        location.addOrganism(offspring);
+        hasReproduced = true;
+        logReproduce(this, offspring, location);
+    }
+
+    protected Organism createOffspring() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return this.getClass().getDeclaredConstructor().newInstance();
     }
 
     public void die() {

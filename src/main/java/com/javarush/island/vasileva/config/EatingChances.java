@@ -1,7 +1,7 @@
 package com.javarush.island.vasileva.config;
 
 import com.javarush.island.vasileva.api.interfaces.Eatable;
-import com.javarush.island.vasileva.entity.animals.Animal;
+import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
@@ -80,7 +80,7 @@ public class EatingChances {
         }
     }
 
-    public static double getChances(Class<? extends Animal> animal, Class<? extends Eatable> prey) {
+    public static double getChances(Class<? extends Organism> animal, Class<? extends Eatable> prey) {
         Map<Class<?>, Double> animalDiet = EATING_CHANCES.get(animal);
         if (animalDiet == null || animalDiet.get(prey) == null) {
             return 0;

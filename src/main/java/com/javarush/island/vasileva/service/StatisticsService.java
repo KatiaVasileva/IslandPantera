@@ -2,7 +2,6 @@ package com.javarush.island.vasileva.service;
 
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.Organism;
-import com.javarush.island.vasileva.entity.plants.Plant;
 import com.javarush.island.vasileva.statiistics.StatisticsCollector;
 import com.javarush.island.vasileva.statiistics.StatisticsFormatter;
 
@@ -13,12 +12,10 @@ public class StatisticsService {
     private final StatisticsFormatter formatter = new StatisticsFormatter();
 
     public String generateReport(Island island, int tickCounter) {
-        Map<Class<? extends Organism>, Integer> animalCounts = collector.collectAnimalCounts(island);
-        Map<Class<? extends Plant>, Integer> plantCounts = collector.collectPlantCounts(island);
+        Map<Class<? extends Organism>, Integer> organismCounts = collector.collectOrganismCounts(island);
 
         return formatter.format(
-                animalCounts,
-                plantCounts,
+                organismCounts,
                 tickCounter
         );
     }
