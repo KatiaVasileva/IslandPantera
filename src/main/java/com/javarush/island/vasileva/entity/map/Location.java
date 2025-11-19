@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import static com.javarush.island.vasileva.config.Setting.DIRECTIONS;
 
@@ -42,9 +43,15 @@ public class Location {
         }
     }
 
-    public synchronized void removeOrganism(Organism organism) {
+    public void removeOrganism(Organism organism) {
         synchronized (organismLock) {
             organisms.remove(organism);
+        }
+    }
+
+    public Map<String, List<Organism>> getSpecies() {
+        synchronized (organismLock) {
+            return getOrganisms().stream().collect(Collectors.groupingBy(Organism::getName));
         }
     }
 
@@ -63,10 +70,7 @@ public class Location {
     public boolean isMoveValid(Location newLocation, OrganismData data) {
         if (newLocation == null) return false;
         if (this == newLocation) return false;
-        int numberPerCell = (int) newLocation.getOrganisms().stream()
-                .filter(organism -> organism.getName().equals(data.name()))
-                .count();
-        return numberPerCell < data.maxPerCell();
+        return getSpecies().get(data.name()).size() < data.maxPerCell();
     }
 
     public Location[] getLockOrder(Location otherLoc) {
