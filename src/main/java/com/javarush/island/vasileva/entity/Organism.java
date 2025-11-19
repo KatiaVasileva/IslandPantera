@@ -1,6 +1,5 @@
 package com.javarush.island.vasileva.entity;
 
-import com.javarush.island.vasileva.api.interfaces.Eatable;
 import com.javarush.island.vasileva.api.interfaces.Eating;
 import com.javarush.island.vasileva.api.interfaces.Movable;
 import com.javarush.island.vasileva.api.interfaces.Reproducible;
@@ -62,6 +61,10 @@ public abstract class Organism implements Eating, Reproducible, Movable {
         return organismData.maxPerCell();
     }
 
+    public boolean isEatable() {
+        return organismData.eatable();
+    }
+
     public String getImage() {
         return organismData.image();
     }
@@ -88,26 +91,26 @@ public abstract class Organism implements Eating, Reproducible, Movable {
         }
     }
 
-    protected List<Eatable> findFood() {
-        List<Eatable> food = new ArrayList<>();
+    protected List<Organism> findFood() {
+        List<Organism> food = new ArrayList<>();
         for (Organism organism : location.getOrganisms()) {
-            if (organism.isALive() && organism instanceof Eatable eatable) {
-                food.add(eatable);
+            if (organism.isALive() && organism.isEatable()) {
+                food.add(organism);
             }
         }
         return food;
     }
 
-    protected boolean canEat(Eatable item) {
+    protected boolean canEat(Organism item) {
         double chance = EatingChances.getChances(this.getClass(), item.getClass());
         return chance > 0 && Math.random() < chance;
     }
 
-    protected boolean isFoodAvailable(Eatable food) {
-        return ((Organism) food).isALive();
+    protected boolean isFoodAvailable(Organism food) {
+        return food.isALive();
     }
 
-    protected void consumeFood(Eatable food) {
+    protected void consumeFood(Organism food) {
         if (food instanceof Organism prey) {
             prey.die();
             location.removeOrganism(prey);
@@ -159,5 +162,4 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     public void die() {
         isALive = false;
     }
-
 }

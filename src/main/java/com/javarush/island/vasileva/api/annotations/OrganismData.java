@@ -13,5 +13,6 @@ public @interface OrganismData {
     int speed() default 0;
     double foodRequired() default 0;
     int maxPerCell();
+    boolean eatable() default false;
     String image();
 }

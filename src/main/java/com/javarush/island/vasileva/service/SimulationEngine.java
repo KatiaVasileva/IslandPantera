@@ -6,7 +6,6 @@ import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.view.ConsoleRenderer;
 import lombok.Setter;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -45,11 +44,11 @@ public class SimulationEngine {
                     workerPool.submit(() -> {
                         if (organism.isALive()) {
                             organism.eat();
-                            try {
-                                organism.reproduce();
-                            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            }
+//                            try {
+//                                organism.reproduce();
+//                            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+//                                throw new RuntimeException(e);
+//                            }
                             organism.move(island);
                         }
                     });

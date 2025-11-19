@@ -3,7 +3,6 @@ package com.javarush.island.vasileva.entity.animals;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
-import com.javarush.island.vasileva.api.interfaces.Eatable;
 import com.javarush.island.vasileva.entity.Organism;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,16 +21,16 @@ public abstract class Animal extends Organism {
         Location loc = getLocation();
         if (loc == null) return;
 
-        List<Eatable> food = findFood();
+        List<Organism> food = findFood();
 
-        for (Eatable item : food) {
+        for (Organism item : food) {
             if (!canEat(item)) continue;
 
             synchronized (loc) {
                 synchronized (item) {
                     if (!isFoodAvailable(item)) continue;
                     consumeFood(item);
-                    logEat(this, (Organism) item, loc);
+                    logEat(this, item, loc);
                     return;
                 }
             }
