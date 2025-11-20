@@ -20,7 +20,6 @@ public abstract class Animal extends Organism {
     public void eat() {
         Location loc = getLocation();
         if (loc == null) {
-//            onTickNoFood();
             return;
         }
 
@@ -28,17 +27,16 @@ public abstract class Animal extends Organism {
 
         for (Organism item : food) {
             if (!canEat(item)) {
-//                onTickNoFood();
                 continue;
             }
 
             synchronized (loc) {
                 synchronized (item) {
                     if (!isFoodAvailable(item)) {
-//                        onTickNoFood();
                         continue;
                     }
                     consumeFood(item);
+                    System.out.println(this.getName() + this.getId() + " = " + this.getWeight());
                     logEat(this, item, loc);
                     return;
                 }

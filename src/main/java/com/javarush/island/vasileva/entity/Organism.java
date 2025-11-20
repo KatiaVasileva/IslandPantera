@@ -31,6 +31,7 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     private transient OrganismData organismData;
     private boolean isALive = true;
     protected int age = 0;
+    private double weight;
     protected volatile boolean hasReproduced = false;
 
     public Organism() {
@@ -45,8 +46,8 @@ public abstract class Organism implements Eating, Reproducible, Movable {
         return organismData.name();
     }
 
-    public double getWeight() {
-        return organismData.weight();
+    public double getMaxWeight() {
+        return organismData.maxWeight();
     }
 
     public int getSpeed() {
@@ -83,6 +84,7 @@ public abstract class Organism implements Eating, Reproducible, Movable {
                 Location location = island.getLocation(startX, startY);
                 if (location != null) {
                     Organism organism = this.getClass().getConstructor().newInstance();
+                    organism.setWeight(ThreadLocalRandom.current().nextDouble(data.maxWeight() / 5, data.maxWeight()));
                     location.addOrganism(organism);
                     organism.setLocation(location);
                 }

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface OrganismData {
     String name();
-    double weight();
+    double maxWeight();
     int speed() default 0;
     double foodRequired() default 0;
     int maxPerCell();
