@@ -84,7 +84,7 @@ public abstract class Organism implements Eating, Reproducible, Movable {
                 Location location = island.getLocation(startX, startY);
                 if (location != null) {
                     Organism organism = this.getClass().getConstructor().newInstance();
-                    organism.setWeight(ThreadLocalRandom.current().nextDouble(data.maxWeight() / 5, data.maxWeight()));
+                    organism.setWeight(ThreadLocalRandom.current().nextDouble(data.maxWeight() - data.maxWeight() * 0.2, data.maxWeight()));
                     location.addOrganism(organism);
                     organism.setLocation(location);
                 }
@@ -106,6 +106,15 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     protected boolean canEat(Organism item) {
         double chance = EatingChances.getChances(this.getClass(), item.getClass());
         return chance > 0 && Math.random() < chance;
+    }
+
+    protected void looseWeight() {
+        setWeight(getWeight() - getWeight() * 0.05);
+        if ((int) getWeight() < getMaxWeight() * 0.1) {
+            die();
+            location.removeOrganism(this);
+            System.out.println(getName() + getId() + " died");
+        }
     }
 
     protected boolean isFoodAvailable(Organism food) {

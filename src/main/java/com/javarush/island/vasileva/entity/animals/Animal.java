@@ -25,13 +25,15 @@ public abstract class Animal extends Organism {
 
         List<Organism> food = findFood();
 
-        for (Organism item : food) {
-            if (!canEat(item)) {
-                continue;
-            }
 
+        for (Organism item : food) {
             synchronized (loc) {
                 synchronized (item) {
+                    if (!canEat(item)) {
+                        looseWeight();
+                        return;
+                    }
+
                     if (!isFoodAvailable(item)) {
                         continue;
                     }
