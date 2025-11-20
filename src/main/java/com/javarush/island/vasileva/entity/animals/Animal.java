@@ -19,16 +19,25 @@ public abstract class Animal extends Organism {
 
     public void eat() {
         Location loc = getLocation();
-        if (loc == null) return;
+        if (loc == null) {
+//            onTickNoFood();
+            return;
+        }
 
         List<Organism> food = findFood();
 
         for (Organism item : food) {
-            if (!canEat(item)) continue;
+            if (!canEat(item)) {
+//                onTickNoFood();
+                continue;
+            }
 
             synchronized (loc) {
                 synchronized (item) {
-                    if (!isFoodAvailable(item)) continue;
+                    if (!isFoodAvailable(item)) {
+//                        onTickNoFood();
+                        continue;
+                    }
                     consumeFood(item);
                     logEat(this, item, loc);
                     return;
