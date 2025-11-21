@@ -18,8 +18,10 @@ public class Setting {
     public static final int HEIGHT = 10;
     public static final int SHOW_WIDTH = 10;
     public static final int SHOW_HEIGHT = 10;
-    public static final int CELL_WIDTH = 5;
+    public static final int CELL_WIDTH = 6;
     public static final int ORGANISM_PLACEMENT_CYCLES = 1;
+    public static final int GRASS_PLACEMENT_CYCLES = 5;
+    public static final double GRASS_GROWING_COEF = 0.1;
     public static final int[][] DIRECTIONS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     public static final Class<?>[] TYPES = {
@@ -30,7 +32,7 @@ public class Setting {
 
     public static final Class<?>[] HERBIVORES_TYPES = {
             Horse.class, Duck.class, Rabbit.class, Mouse.class, Deer.class,
-            Boar.class, Eagle.class, Fox.class, Goat.class, Sheep.class, Bull.class, Boa.class
+            Boar.class, Goat.class, Sheep.class, Bull.class
     };
 
     public static final Class<?>[] HERBIVORES_TYPES_THAT_EAT_WORMS = {

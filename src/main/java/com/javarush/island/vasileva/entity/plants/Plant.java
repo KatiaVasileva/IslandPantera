@@ -1,7 +1,6 @@
 package com.javarush.island.vasileva.entity.plants;
 
 import com.javarush.island.vasileva.entity.map.Island;
-import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.entity.Organism;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,14 +8,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class Plant extends Organism {
-    private Location location;
 
     @Override
-    public void eat(){
+    public void eat() {
     }
 
     @Override
-    public void reproduce(){
+    public void reproduce() {
     }
 
     @Override

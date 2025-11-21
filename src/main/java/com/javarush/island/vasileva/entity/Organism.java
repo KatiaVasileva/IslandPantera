@@ -18,7 +18,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.javarush.island.vasileva.config.Setting.*;
-import static com.javarush.island.vasileva.util.Debug.logReproduce;
 
 @Getter
 @Setter
@@ -105,15 +104,16 @@ public abstract class Organism implements Eating, Reproducible, Movable {
 
     protected boolean canEat(Organism item) {
         double chance = EatingChances.getChances(this.getClass(), item.getClass());
-        return chance > 0 && Math.random() < chance;
+//        return chance > 0 && Math.random() < chance;
+        return chance > 0;
     }
 
     protected void looseWeight() {
         setWeight(getWeight() - getWeight() * 0.05);
-        if ((int) getWeight() < getMaxWeight() * 0.1) {
+        if (getWeight() < getMaxWeight() * 0.1) {
             die();
             location.removeOrganism(this);
-            System.out.println(getName() + getId() + " died");
+//            System.out.println(getName() + getId() + " died");
         }
     }
 
@@ -162,12 +162,15 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     protected void tryReproduce() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Organism offspring = createOffspring();
         location.addOrganism(offspring);
-        hasReproduced = true;
-        logReproduce(this, offspring, location);
+        offspring.setLocation(location);
+//        hasReproduced = true;
+//        logReproduce(this, offspring, location);
     }
 
     protected Organism createOffspring() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        return this.getClass().getDeclaredConstructor().newInstance();
+        Organism offspring = this.getClass().getDeclaredConstructor().newInstance();
+        offspring.setWeight(ThreadLocalRandom.current().nextDouble(ThreadLocalRandom.current().nextDouble(getMaxWeight() - getMaxWeight() * 0.2, getMaxWeight())));
+        return offspring;
     }
 
     public void die() {

@@ -39,7 +39,7 @@ public class EatingChances {
                 .add(Duck.class, 0.1)
         );
 
-        setDiet(Rabbit.class, new DietBuilder()
+        setDiet(Fox.class, new DietBuilder()
                 .add(Rabbit.class, 0.7)
                 .add(Mouse.class, 0.9)
                 .add(Duck.class, 0.6)

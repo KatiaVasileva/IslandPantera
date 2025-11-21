@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import static com.javarush.island.vasileva.config.Setting.*;
 
 public class ConsoleRunner {
-    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, InterruptedException {
+    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Island island = new Island(WIDTH, HEIGHT);
         init(island);
 
@@ -26,7 +26,7 @@ public class ConsoleRunner {
 
         System.out.println("\nЗапуск симуляции...");
 
-        Thread.sleep(300000);
-        engine.shutdown();
+//        Thread.sleep(300000);
+//        engine.shutdown();
     }
 }

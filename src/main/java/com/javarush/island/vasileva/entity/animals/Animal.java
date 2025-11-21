@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static com.javarush.island.vasileva.config.Setting.*;
-import static com.javarush.island.vasileva.util.Debug.logEat;
 
 @Getter
 @Setter
@@ -25,7 +24,6 @@ public abstract class Animal extends Organism {
 
         List<Organism> food = findFood();
 
-
         for (Organism item : food) {
             synchronized (loc) {
                 synchronized (item) {
@@ -38,8 +36,8 @@ public abstract class Animal extends Organism {
                         continue;
                     }
                     consumeFood(item);
-                    System.out.println(this.getName() + this.getId() + " = " + this.getWeight());
-                    logEat(this, item, loc);
+//                    System.out.println(this.getName() + this.getId() + " = " + this.getWeight());
+//                    logEat(this, item, loc);
                     return;
                 }
             }

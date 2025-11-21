@@ -25,7 +25,8 @@ public class ConsoleRenderer {
     public void render() {
         renderLock.lock();
         try {
-            System.out.println("\n+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
+//            System.out.println("\n+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
+            System.out.println("+" + "=".repeat(SHOW_WIDTH * CELL_WIDTH + SHOW_WIDTH + 1));
 
             for (int x = 0; x < SHOW_HEIGHT; x++) {
                 System.out.print("|");
@@ -36,7 +37,8 @@ public class ConsoleRenderer {
                     System.out.print("|");
                 }
                 System.out.println();
-                System.out.println("+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
+//                System.out.println("+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
+                System.out.println("+" + "=".repeat(SHOW_WIDTH * CELL_WIDTH + SHOW_WIDTH + 1));
             }
         } finally {
             renderLock.unlock();
@@ -56,12 +58,24 @@ public class ConsoleRenderer {
             return " ".repeat(CELL_WIDTH);
         }
 
-        String symbol = getMaxOrganismForCellRendering(livingOrganisms);
+        String firstSymbol = getMaxOrganismForCellRendering(livingOrganisms);
+        String secondSymbol = getSecondMaxOrganismForCellRendering(livingOrganisms);
 
-        if (symbol.length() > CELL_WIDTH) {
-            symbol = symbol.substring(0, CELL_WIDTH);
+        StringBuilder cell = new StringBuilder();
+        cell.append(firstSymbol.isEmpty() ? ' ' : firstSymbol);
+        cell.append(secondSymbol.isEmpty() ? ' ' : secondSymbol);
+
+        // Дополняем до CELL_WIDTH пробелами справа
+        while (cell.length() < CELL_WIDTH) {
+            cell.append(' ');
         }
-        return String.format("%-" + CELL_WIDTH + "s", symbol);
+
+        return cell.toString();
+
+//        if (firstSymbol.length() > CELL_WIDTH) {
+//            firstSymbol = firstSymbol.substring(0, CELL_WIDTH);
+//        }
+//        return String.format("%-" + CELL_WIDTH + "s %s", firstSymbol, secondSymbol);
     }
 
     // Show organism with the maximum number of animals/plants in the location
@@ -81,5 +95,25 @@ public class ConsoleRenderer {
         return useSymbols
                 ? (maxClass != null ? SymbolMap.getSymbol(maxClass) : " ")
                 : (maxClass != null ? SymbolMap.getAbbrev(maxClass) : " ");
+    }
+
+    private String getSecondMaxOrganismForCellRendering(List<Organism> organisms) {
+        Map<Class<?>, Integer> organismsCount = new HashMap<>();
+
+        for (Organism org : organisms) {
+            organismsCount.merge(org.getClass(), 1, Integer::sum);
+        }
+
+        Class<?> secondClass = organismsCount.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Class<?>, Integer>comparingByValue().reversed())
+                .skip(1)
+                .findFirst()
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        return useSymbols
+                ? (secondClass != null ? SymbolMap.getSymbol(secondClass) : " ")
+                : (secondClass != null ? SymbolMap.getAbbrev(secondClass) : " ");
     }
 }
