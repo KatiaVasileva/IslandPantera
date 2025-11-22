@@ -71,11 +71,6 @@ public class ConsoleRenderer {
         }
 
         return cell.toString();
-
-//        if (firstSymbol.length() > CELL_WIDTH) {
-//            firstSymbol = firstSymbol.substring(0, CELL_WIDTH);
-//        }
-//        return String.format("%-" + CELL_WIDTH + "s %s", firstSymbol, secondSymbol);
     }
 
     // Show organism with the maximum number of animals/plants in the location

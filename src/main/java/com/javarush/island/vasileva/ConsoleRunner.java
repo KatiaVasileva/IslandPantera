@@ -1,5 +1,6 @@
 package com.javarush.island.vasileva;
 
+import com.javarush.island.vasileva.config.IslandConfig;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.service.*;
 import com.javarush.island.vasileva.view.ConsoleRenderer;
@@ -9,29 +10,33 @@ import java.lang.reflect.InvocationTargetException;
 import static com.javarush.island.vasileva.config.Setting.*;
 
 public class ConsoleRunner {
-    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, InterruptedException {
-        Island island = new Island(WIDTH, HEIGHT);
-        init(island);
+    public static void main(String[] args) {
+        try {
+            Island island = new Island(WIDTH, HEIGHT);
+            IslandConfig islandConfig = new IslandConfig(island);
 
-        ConsoleRenderer consoleRenderer = new ConsoleRenderer(island);
-        consoleRenderer.setUseSymbols(true);
+            islandConfig.initIsland(island);
 
-        System.out.println("Начальная конфигурация острова:");
-        consoleRenderer.render();
+            ConsoleRenderer consoleRenderer = new ConsoleRenderer(island);
+            consoleRenderer.setUseSymbols(true);
 
-        SimulationEngine engine = new SimulationEngine();
-        engine.setIsland(island);
-        engine.addService(new EatingService(island, engine.getWorkerPool()));
-        engine.addService(new MovementService(island, engine.getWorkerPool()));
-        engine.addService(new ReproductionService(island, engine.getWorkerPool()));
-        engine.addService(new PlantGrowthService(island));
-        engine.addService(new StatisticsService(island, consoleRenderer));
+            SimulationEngine engine = new SimulationEngine();
+            engine.setIsland(island);
 
-        engine.startSimulation(TICK_DURATION);
+            islandConfig.configureServices(engine, consoleRenderer);
 
-        System.out.println("\nЗапуск симуляции...");
+            System.out.println("Начальная конфигурация острова:");
+            consoleRenderer.render();
 
-        Thread.sleep(900_000);
-        engine.shutdown();
+            engine.startSimulation(TICK_DURATION);
+
+            System.out.println("\nЗапуск симуляции...");
+
+            Thread.sleep(900_000);
+            engine.shutdown();
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

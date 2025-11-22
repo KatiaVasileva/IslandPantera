@@ -1,13 +1,10 @@
 package com.javarush.island.vasileva.config;
 
-import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class Setting {
     public static final int CORE_POOL_SIZE = 3;
@@ -19,7 +16,7 @@ public class Setting {
     public static final int SHOW_WIDTH = 10;
     public static final int SHOW_HEIGHT = 10;
     public static final int CELL_WIDTH = 6;
-    public static final int ORGANISM_PLACEMENT_CYCLES = 1;
+    public static final int ORGANISM_PLACEMENT_CYCLES = 5;
     public static final int GRASS_PLACEMENT_CYCLES = 5;
     public static final double GRASS_GROWING_COEF = 0.1;
     public static final int[][] DIRECTIONS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
@@ -66,12 +63,5 @@ public class Setting {
                     " не имеет аннотации @OrganismData");
         }
         return data;
-    }
-
-    public static void init(Island island) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        for (Class<?> type : TYPES) {
-            Organism org = (Organism) type.getConstructor().newInstance();
-            org.placeOrganisms(island);
-        }
     }
 }
