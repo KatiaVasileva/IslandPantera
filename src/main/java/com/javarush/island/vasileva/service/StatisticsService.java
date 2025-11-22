@@ -1,26 +1,32 @@
 package com.javarush.island.vasileva.service;
 
 import com.javarush.island.vasileva.entity.map.Island;
-import com.javarush.island.vasileva.entity.Organism;
-import com.javarush.island.vasileva.statiistics.StatisticsCollector;
-import com.javarush.island.vasileva.statiistics.StatisticsFormatter;
+import com.javarush.island.vasileva.statiistics.StatisticsGenerator;
+import com.javarush.island.vasileva.view.ConsoleRenderer;
+import lombok.Setter;
 
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class StatisticsService {
-    final StatisticsCollector collector = new StatisticsCollector();
-    private final StatisticsFormatter formatter = new StatisticsFormatter();
+public class StatisticsService implements SimulationService{
+    private final ConsoleRenderer consoleRenderer;
+    private final StatisticsGenerator statisticsGenerator;
+    private final AtomicInteger tickCounter = new AtomicInteger(0);
+    @Setter
+    private Island island;
 
-    public String generateReport(Island island, int tickCounter) {
-        Map<Class<? extends Organism>, Integer> organismCounts = collector.collectOrganismCounts(island);
-
-        return formatter.format(
-                organismCounts,
-                tickCounter
-        );
+    public StatisticsService(Island island, ConsoleRenderer consoleRenderer) {
+        this.island = island;
+        this.consoleRenderer = consoleRenderer;
+        this.statisticsGenerator = new StatisticsGenerator();
     }
 
-    public void printReport(Island island, int tickCounter) {
-        System.out.println(generateReport(island, tickCounter));
+    @Override
+    public void run() {
+        int currentTick = tickCounter.incrementAndGet();
+        statisticsGenerator.printReport(island, currentTick);
+
+        if (consoleRenderer != null) {
+            consoleRenderer.render();
+        }
     }
 }

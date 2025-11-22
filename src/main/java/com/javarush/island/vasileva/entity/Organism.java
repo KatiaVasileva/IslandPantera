@@ -163,7 +163,7 @@ public abstract class Organism implements Eating, Reproducible, Movable {
         Organism offspring = createOffspring();
         location.addOrganism(offspring);
         offspring.setLocation(location);
-//        hasReproduced = true;
+        hasReproduced = true;
 //        logReproduce(this, offspring, location);
     }
 

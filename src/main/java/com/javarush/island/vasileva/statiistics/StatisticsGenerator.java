@@ -1,0 +1,24 @@
+package com.javarush.island.vasileva.statiistics;
+
+import com.javarush.island.vasileva.entity.map.Island;
+import com.javarush.island.vasileva.entity.Organism;
+
+import java.util.Map;
+
+public class StatisticsGenerator {
+    final StatisticsCollector collector = new StatisticsCollector();
+    private final StatisticsFormatter formatter = new StatisticsFormatter();
+
+    public String generateReport(Island island, int tickCounter) {
+        Map<Class<? extends Organism>, Integer> organismCounts = collector.collectOrganismCounts(island);
+
+        return formatter.format(
+                organismCounts,
+                tickCounter
+        );
+    }
+
+    public void printReport(Island island, int tickCounter) {
+        System.out.println(generateReport(island, tickCounter));
+    }
+}

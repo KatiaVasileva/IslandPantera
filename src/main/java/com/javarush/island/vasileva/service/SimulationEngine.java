@@ -1,105 +1,40 @@
 package com.javarush.island.vasileva.service;
 
-import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.map.Island;
-import com.javarush.island.vasileva.entity.map.Location;
-import com.javarush.island.vasileva.entity.plants.Grass;
-import com.javarush.island.vasileva.view.ConsoleRenderer;
+import lombok.Getter;
 import lombok.Setter;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javarush.island.vasileva.config.Setting.*;
 import static com.javarush.island.vasileva.config.Setting.THREAD_NUMBER;
 
+@Getter
+@Setter
 public class SimulationEngine {
-    private ConsoleRenderer consoleRenderer;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(CORE_POOL_SIZE);
     private final ExecutorService workerPool = Executors.newFixedThreadPool(THREAD_NUMBER);
-    private final AtomicInteger tickCounter = new AtomicInteger(0);
-    private final StatisticsService statisticsService = new StatisticsService();
-    @Setter
+
+    private final List<SimulationService> services = new ArrayList<>();
+
     private Island island;
 
-    public void initRenderer(ConsoleRenderer consoleRenderer) {
-        this.consoleRenderer = consoleRenderer;
+    public void addService(SimulationService service) {
+        services.add(service);
     }
 
     public void startSimulation(long tickDuration) {
         if (island == null) {
             throw new IllegalStateException("Island is not initialized");
         }
-        scheduledExecutorService.scheduleWithFixedDelay(this::processOrganisms, 0, tickDuration, TimeUnit.MILLISECONDS);
-        scheduledExecutorService.scheduleWithFixedDelay(this::getStatistics, 0, tickDuration, TimeUnit.MILLISECONDS);
-        scheduledExecutorService.scheduleWithFixedDelay(this::growPlants, 0, tickDuration, TimeUnit.MILLISECONDS);
-    }
-
-    public void processOrganisms() {
-        if (island == null) return;
-        for (Location[] row : island.getGrid()) {
-            for (Location location : row) {
-                for (Organism organism : location.getOrganisms()) {
-                    workerPool.submit(() -> {
-                        if (organism.isALive()) {
-                            organism.eat();
-                            try {
-                                organism.reproduce();
-                            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            }
-                            organism.move(island);
-                        }
-                    });
-                }
-            }
+        for (SimulationService service : services) {
+            scheduledExecutorService.scheduleWithFixedDelay(service, 0, tickDuration, TimeUnit.MILLISECONDS);
         }
-    }
-
-    public void growPlants() {
-        if (island == null) return;
-
-        for (Location[] row : island.getGrid()) {
-            for (Location location : row) {
-                synchronized (location) {
-                    List<Organism> plants = location.getSpecies().get("Grass"); // Используем класс, а не строку
-
-                    if (plants == null) {
-                        plants = new ArrayList<>();
-                        location.getSpecies().put("grass", plants); // Инициализируем, если отсутствует
-                    }
-
-                    int maxPlantsPerCell = 2;
-                    if (plants.size() < maxPlantsPerCell) {
-                        try {
-                            Grass newGrass = new Grass();
-                            newGrass.setWeight(newGrass.getMaxWeight() * 0.1); // 10% от максимума
-                            location.addOrganism(newGrass);
-                            newGrass.setLocation(location);
-                        } catch (Exception e) {
-                            System.err.println("Ошибка при создании травы: " + e.getMessage());
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    private void getStatistics() {
-            int currentTick = tickCounter.incrementAndGet();
-
-            statisticsService.printReport(island, currentTick);
-
-            if (consoleRenderer != null) {
-                consoleRenderer.render();
-            }
     }
 
     public void shutdown() {

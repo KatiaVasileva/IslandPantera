@@ -1,7 +1,7 @@
 package com.javarush.island.vasileva;
 
 import com.javarush.island.vasileva.entity.map.Island;
-import com.javarush.island.vasileva.service.SimulationEngine;
+import com.javarush.island.vasileva.service.*;
 import com.javarush.island.vasileva.view.ConsoleRenderer;
 
 import java.lang.reflect.InvocationTargetException;
@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import static com.javarush.island.vasileva.config.Setting.*;
 
 public class ConsoleRunner {
-    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, InterruptedException {
         Island island = new Island(WIDTH, HEIGHT);
         init(island);
 
@@ -21,12 +21,17 @@ public class ConsoleRunner {
 
         SimulationEngine engine = new SimulationEngine();
         engine.setIsland(island);
-        engine.initRenderer(consoleRenderer);
+        engine.addService(new EatingService(island, engine.getWorkerPool()));
+        engine.addService(new MovementService(island, engine.getWorkerPool()));
+        engine.addService(new ReproductionService(island, engine.getWorkerPool()));
+        engine.addService(new PlantGrowthService(island));
+        engine.addService(new StatisticsService(island, consoleRenderer));
+
         engine.startSimulation(TICK_DURATION);
 
         System.out.println("\nЗапуск симуляции...");
 
-//        Thread.sleep(300000);
-//        engine.shutdown();
+        Thread.sleep(900_000);
+        engine.shutdown();
     }
 }
