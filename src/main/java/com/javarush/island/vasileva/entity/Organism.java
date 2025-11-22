@@ -4,6 +4,7 @@ import com.javarush.island.vasileva.api.interfaces.Eating;
 import com.javarush.island.vasileva.api.interfaces.Movable;
 import com.javarush.island.vasileva.api.interfaces.Reproducible;
 import com.javarush.island.vasileva.config.EatingChances;
+import com.javarush.island.vasileva.entity.animals.Predator;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
@@ -95,7 +96,7 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     protected List<Organism> findFood() {
         List<Organism> food = new ArrayList<>();
         for (Organism organism : location.getOrganisms()) {
-            if (organism.isALive() && organism.isEatable()) {
+            if (organism.isALive() && organism.isEatable() && !organism.getName().equals(getName())) {
                 food.add(organism);
             }
         }
@@ -104,12 +105,11 @@ public abstract class Organism implements Eating, Reproducible, Movable {
 
     protected boolean canEat(Organism item) {
         double chance = EatingChances.getChances(this.getClass(), item.getClass());
-//        return chance > 0 && Math.random() < chance;
-        return chance > 0;
+        return chance > 0 && ThreadLocalRandom.current().nextDouble() < chance;
     }
 
     protected void looseWeight() {
-        setWeight(getWeight() - getWeight() * 0.05);
+        setWeight(getWeight() * 0.99);
         if (getWeight() < getMaxWeight() * 0.1) {
             die();
             location.removeOrganism(this);
@@ -128,6 +128,24 @@ public abstract class Organism implements Eating, Reproducible, Movable {
         }
     }
 
+    protected void setWeightsAfterEating(Organism food) {
+//        System.out.println("before eating " + getName() +  getId() + " = " + getWeight() + " prey: " + food.getName() + food.getId() + " = " + food.getWeight());
+        double newPredatorWeight;
+        if (food.getWeight() <= getFoodRequired()) {
+            newPredatorWeight = getWeight() + food.getWeight();
+        } else {
+            newPredatorWeight = getWeight() + getFoodRequired();
+        }
+        if (newPredatorWeight <= getMaxWeight()) {
+            setWeight(newPredatorWeight);
+            food.setWeight(food.getWeight() - getFoodRequired());
+        } else {
+            food.setWeight(food.getWeight() - (getMaxWeight() - getWeight()));
+            setWeight(getMaxWeight());
+        }
+//        System.out.println("after eating " + getName() +  getId() + " = " + getWeight() + " prey: " + food.getName() + food.getId() + " = " + food.getWeight());
+    }
+
     protected void performMove(Location firstLock, Location secondLock, Location from, Location to) {
         synchronized (firstLock) {
             synchronized (secondLock) {
@@ -139,7 +157,11 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     }
 
     protected boolean cannotReproduce() {
-        return age < 5 || hasReproduced || !isALive();
+        if (this instanceof Predator) {
+            return age < 5 || hasReproduced || !isALive();
+        } else {
+            return age % 10 != 0 || hasReproduced || !isALive();
+        }
     }
 
     protected List<Organism> findPotentialPartners() {
