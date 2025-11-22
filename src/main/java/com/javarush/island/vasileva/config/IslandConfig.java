@@ -1,10 +1,12 @@
 package com.javarush.island.vasileva.config;
 
+import com.javarush.island.vasileva.api.interfaces.Eating;
 import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.service.*;
 import com.javarush.island.vasileva.view.ConsoleRenderer;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -25,10 +27,18 @@ public class IslandConfig {
         }
     }
 
+    @SneakyThrows
     public void configureServices(SimulationEngine engine, ConsoleRenderer consoleRenderer) {
-        engine.addService(new EatingService(island, engine.getWorkerPool()));
-        engine.addService(new MovementService(island, engine.getWorkerPool()));
-        engine.addService(new ReproductionService(island, engine.getWorkerPool()));
+        engine.addService(new OrganismActionService(island, engine.getWorkerPool(), Eating::eat));
+        engine.addService(new OrganismActionService(island, engine.getWorkerPool(), organism -> {
+            try {
+                organism.reproduce();
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        engine.addService(new OrganismActionService(island, engine.getWorkerPool(), organism -> organism.move(island)));
         engine.addService(new PlantGrowthService(island));
         engine.addService(new StatisticsService(island, consoleRenderer));
     }

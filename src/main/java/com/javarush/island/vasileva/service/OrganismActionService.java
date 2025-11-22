@@ -5,14 +5,17 @@ import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
 
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
-public class ReproductionService implements SimulationService {
+public class OrganismActionService implements SimulationService {
     private final Island island;
     private final ExecutorService workerPool;
+    private final Consumer<Organism> action;
 
-    public ReproductionService(Island island, ExecutorService workerPool) {
+    public OrganismActionService(Island island, ExecutorService workerPool, Consumer<Organism> action) {
         this.island = island;
         this.workerPool = workerPool;
+        this.action = action;
     }
 
     @Override
@@ -23,11 +26,7 @@ public class ReproductionService implements SimulationService {
                 for (Organism organism : location.getOrganisms()) {
                     workerPool.submit(() -> {
                         if (organism.isALive()) {
-                            try {
-                                organism.reproduce();
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
+                            action.accept(organism);
                         }
                     });
                 }
