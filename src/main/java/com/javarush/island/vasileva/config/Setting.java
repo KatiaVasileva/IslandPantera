@@ -5,6 +5,7 @@ import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
+import com.javarush.island.vasileva.entity.plants.Mushroom;
 
 public class Setting {
     public static final int CORE_POOL_SIZE = 3;
@@ -17,8 +18,7 @@ public class Setting {
     public static final int SHOW_HEIGHT = 10;
     public static final int CELL_WIDTH = 6;
     public static final int ORGANISM_PLACEMENT_CYCLES = 2;
-    public static final int GRASS_PLACEMENT_CYCLES = 5;
-    public static final double GRASS_GROWING_COEF = 0.1;
+    public static final int MAX_PLANTS_PER_CELL = 3;
     public static final int[][] DIRECTIONS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     public static final Class<?>[] TYPES = {
@@ -37,7 +37,8 @@ public class Setting {
             Bull.class,
             Boa.class,
             Worm.class,
-            Grass.class
+            Grass.class,
+            Mushroom.class,
     };
 
     public static final Class<?>[] HERBIVORES_TYPES = {
@@ -47,6 +48,14 @@ public class Setting {
 
     public static final Class<?>[] HERBIVORES_TYPES_THAT_EAT_WORMS = {
             Duck.class, Mouse.class
+    };
+
+    public static final Class<?>[] PLANTS_TYPES = {
+            Grass.class, Mushroom.class
+    };
+
+    public static final Class<?>[] HERBIVORES_TYPES_THAT_EAT_MUSHROOMS = {
+            Deer.class, Rabbit.class
     };
 
     public static final String WOLF_IMAGE = "\uD83D\uDC3A";
@@ -65,6 +74,7 @@ public class Setting {
     public static final String DUCK_IMAGE = "\uD83E\uDD86";
     public static final String WORM_IMAGE = "\uD83D\uDC1B";
     public static final String GRASS_IMAGE = "\uD83C\uDF3F";
+    public static final String MUSHROOM_IMAGE = "\uD83C\uDF44";
 
     private Setting() {
     }

@@ -16,9 +16,9 @@ public class Debug {
                 getData(organism).name() + organism.getId(), getData(offspring).name() + offspring.getId(), loc.getX(), loc.getY());
     }
 
-    public static void logMove(Organism organism, Location loc) {
-        System.out.printf("%s переместился в [%d,%d]%n",
-                organism.getName() + organism.getId(), loc.getX(), loc.getY());
+    public static void logMove(Organism organism, Location loc, Location newLoc) {
+        System.out.printf("%s переместился из [%d,%d] в [%d,%d]%n",
+                organism.getName() + organism.getId(), loc.getX(), loc.getY(), newLoc.getX(), newLoc.getY());
     }
 
 }

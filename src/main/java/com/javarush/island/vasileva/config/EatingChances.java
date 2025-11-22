@@ -4,14 +4,14 @@ import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
+import com.javarush.island.vasileva.entity.plants.Mushroom;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.javarush.island.vasileva.config.Setting.HERBIVORES_TYPES;
-import static com.javarush.island.vasileva.config.Setting.HERBIVORES_TYPES_THAT_EAT_WORMS;
+import static com.javarush.island.vasileva.config.Setting.*;
 
 public class EatingChances {
     private static final Map<Class<?>, Map<Class<?>, Double>> EATING_CHANCES = new HashMap<>();
@@ -44,6 +44,7 @@ public class EatingChances {
                 .add(Mouse.class, 0.9)
                 .add(Duck.class, 0.6)
                 .add(Worm.class, 0.4)
+                .add(Mushroom.class, 0.5)
         );
 
         setDiet(Bear.class, new DietBuilder()
@@ -56,6 +57,7 @@ public class EatingChances {
                 .add(Sheep.class, 0.7)
                 .add(Bull.class, 0.2)
                 .add(Duck.class, 0.1)
+                .add(Mushroom.class, 1.0)
         );
 
         setDiet(Eagle.class, new DietBuilder()
@@ -69,12 +71,15 @@ public class EatingChances {
                 .add(Mouse.class, 0.5)
                 .add(Worm.class, 0.9)
                 .add(Grass.class, 1.0)
+                .add(Mushroom.class, 0.7)
         );
 
         for (Class<?> herbivore : List.of(HERBIVORES_TYPES)) {
             DietBuilder dietBuilder = new DietBuilder().add(Grass.class, 1.0);
             if (List.of(HERBIVORES_TYPES_THAT_EAT_WORMS).contains(herbivore))
                 dietBuilder.add(Worm.class, 0.9);
+            if (List.of(HERBIVORES_TYPES_THAT_EAT_MUSHROOMS).contains(herbivore))
+                dietBuilder.add(Mushroom.class, 1.0);
             setDiet(herbivore, dietBuilder);
         }
     }

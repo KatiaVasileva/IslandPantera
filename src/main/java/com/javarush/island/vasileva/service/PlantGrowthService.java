@@ -3,15 +3,19 @@ package com.javarush.island.vasileva.service;
 import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
-import com.javarush.island.vasileva.entity.plants.Grass;
+import com.javarush.island.vasileva.entity.plants.Plant;
 
-import java.util.ArrayList;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.List;
+
+import static com.javarush.island.vasileva.config.Setting.MAX_PLANTS_PER_CELL;
+import static com.javarush.island.vasileva.config.Setting.PLANTS_TYPES;
 
 public class PlantGrowthService implements SimulationService {
     private final Island island;
 
-    public PlantGrowthService(Island island) {
+        public PlantGrowthService(Island island) {
         this.island = island;
     }
 
@@ -22,17 +26,23 @@ public class PlantGrowthService implements SimulationService {
         for (Location[] row : island.getGrid()) {
             for (Location location : row) {
                 synchronized (location) {
-                    List<Organism> plants = location.getSpecies().computeIfAbsent("Grass", k -> new ArrayList<>());
+                    for (Class<?> plantClass : PLANTS_TYPES) {
+                            List<Organism> existingPlants = location.getSpecies()
+                                .getOrDefault(plantClass, Collections.emptyList());
 
-                    int maxPlantsPerCell = 2;
-                    if (plants.size() < maxPlantsPerCell) {
+                        if (existingPlants.size() >= MAX_PLANTS_PER_CELL) {
+                            continue;
+                        }
+
                         try {
-                            Grass newGrass = new Grass();
-                            newGrass.setWeight(newGrass.getMaxWeight() * 0.1);
-                            location.addOrganism(newGrass);
-                            newGrass.setLocation(location);
-                        } catch (Exception e) {
-                            System.err.println("Ошибка при создании травы: " + e.getMessage());
+                            Plant newPlant = (Plant) plantClass.getDeclaredConstructor().newInstance();
+                            newPlant.setWeight(newPlant.getMaxWeight());
+                            location.addOrganism(newPlant);
+                            newPlant.setLocation(location);
+                        } catch (InstantiationException | IllegalAccessException |
+                                 InvocationTargetException | NoSuchMethodException e) {
+                            System.err.println("Ошибка создания растения " +
+                                    plantClass.getSimpleName() + ": " + e.getMessage());
                         }
                     }
                 }

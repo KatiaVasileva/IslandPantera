@@ -3,6 +3,7 @@ package com.javarush.island.vasileva.view;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
+import com.javarush.island.vasileva.entity.plants.Mushroom;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class SymbolMap {
         SYMBOLS.put(Duck.class, DUCK_IMAGE);
         SYMBOLS.put(Worm.class, WORM_IMAGE);
         SYMBOLS.put(Grass.class, GRASS_IMAGE);
+        SYMBOLS.put(Mushroom.class, MUSHROOM_IMAGE);
 
 
         ABBREVS.put(Wolf.class, "В");
@@ -48,6 +50,7 @@ public class SymbolMap {
         ABBREVS.put(Duck.class, "Ут");
         ABBREVS.put(Worm.class, "Гус");
         ABBREVS.put(Grass.class, "Тр");
+        ABBREVS.put(Mushroom.class, "Гр");
     }
 
     public static String getSymbol(Object obj) {

@@ -2,15 +2,12 @@ package com.javarush.island.vasileva.entity.animals;
 
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
-import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.entity.Organism;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
-import static com.javarush.island.vasileva.config.Setting.*;
 
 @Getter
 @Setter
@@ -70,16 +67,15 @@ public abstract class Animal extends Organism {
     }
 
     public void move(Island island) {
-        OrganismData data = getData(this);
-
         Location loc = getLocation();
         if (loc == null) return;
 
-        Location newLoc = loc.getNewLocation(island, data);
-        if (!loc.isMoveValid(newLoc, data)) return;
+        Location newLoc = loc.getNewLocation(island, this);
+        if (!loc.isMoveValid(newLoc, this)) return;
 
         Location[] lockOrder = loc.getLockOrder(newLoc);
 
         performMove(lockOrder[0], lockOrder[1], loc, newLoc);
+//        Debug.logMove(this, loc,  newLoc);
     }
 }

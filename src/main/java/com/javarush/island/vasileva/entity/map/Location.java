@@ -1,6 +1,5 @@
 package com.javarush.island.vasileva.entity.map;
 
-import com.javarush.island.vasileva.api.annotations.OrganismData;
 import com.javarush.island.vasileva.entity.Organism;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,17 +48,17 @@ public class Location {
         }
     }
 
-    public Map<String, List<Organism>> getSpecies() {
+    public Map<Class<?>, List<Organism>> getSpecies() {
         synchronized (organismLock) {
-            return getOrganisms().stream().collect(Collectors.groupingBy(Organism::getName));
+            return getOrganisms().stream().collect(Collectors.groupingBy(Organism::getClass));
         }
     }
 
-    public Location getNewLocation(Island island, OrganismData data) {
+    public Location getNewLocation(Island island, Organism organism) {
         int[] direction = DIRECTIONS[ThreadLocalRandom.current().nextInt(4)];
 
-        int newX = getX() + (direction[0] * ThreadLocalRandom.current().nextInt(data.speed() + 1));
-        int newY = getY() + (direction[1] * ThreadLocalRandom.current().nextInt(data.speed() + 1));
+        int newX = getX() + (direction[0] * ThreadLocalRandom.current().nextInt(organism.getSpeed() + 1));
+        int newY = getY() + (direction[1] * ThreadLocalRandom.current().nextInt(organism.getSpeed() + 1));
 
         if (newX < 0 || newX > island.getWidth() || newY < 0 || newY > island.getHeight()) {
             return this;
@@ -67,10 +66,10 @@ public class Location {
         return island.getLocation(newX, newY);
     }
 
-    public boolean isMoveValid(Location newLocation, OrganismData data) {
+    public boolean isMoveValid(Location newLocation, Organism organism) {
         if (newLocation == null) return false;
         if (this == newLocation) return false;
-        return getSpecies().get(data.name()).size() < data.maxPerCell();
+        return getSpecies().get(organism.getClass()).size() < organism.getMaxPerCell();
     }
 
     public Location[] getLockOrder(Location otherLoc) {
