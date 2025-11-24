@@ -5,11 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static com.javarush.island.vasileva.config.Setting.DIRECTIONS;
+import static com.javarush.island.vasileva.util.RandomValues.getRandomInt;
 
 @Getter
 @Setter
@@ -18,7 +17,6 @@ public class Location {
     private int y;
     private final List<Organism> organisms = new ArrayList<>();
 
-    private final ReentrantLock lock = new ReentrantLock();
     private final Object organismLock = new Object();
 
     public Location(int x, int y) {
@@ -50,15 +48,15 @@ public class Location {
 
     public Map<Class<?>, List<Organism>> getSpecies() {
         synchronized (organismLock) {
-            return getOrganisms().stream().collect(Collectors.groupingBy(Organism::getClass));
+            return new HashMap<>(getOrganisms().stream().collect(Collectors.groupingBy(Organism::getClass)));
         }
     }
 
     public Location getNewLocation(Island island, Organism organism) {
-        int[] direction = DIRECTIONS[ThreadLocalRandom.current().nextInt(4)];
+        int[] direction = DIRECTIONS[getRandomInt(DIRECTIONS.length)];
 
-        int newX = getX() + (direction[0] * ThreadLocalRandom.current().nextInt(organism.getSpeed() + 1));
-        int newY = getY() + (direction[1] * ThreadLocalRandom.current().nextInt(organism.getSpeed() + 1));
+        int newX = getX() + (direction[0] * getRandomInt(organism.getSpeed() + 1));
+        int newY = getY() + (direction[1] * getRandomInt(organism.getSpeed() + 1));
 
         if (newX < 0 || newX > island.getWidth() || newY < 0 || newY > island.getHeight()) {
             return this;

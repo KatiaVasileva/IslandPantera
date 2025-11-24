@@ -8,6 +8,7 @@ import com.javarush.island.vasileva.entity.animals.Predator;
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;
 import com.javarush.island.vasileva.api.annotations.OrganismData;
+import com.javarush.island.vasileva.repository.OrganismFactory;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.javarush.island.vasileva.config.Setting.*;
+import static com.javarush.island.vasileva.util.RandomValues.getRandomInt;
+import static com.javarush.island.vasileva.util.RandomValues.getRandomNumber;
 
 @Getter
 @Setter
@@ -72,21 +75,16 @@ public abstract class Organism implements Eating, Reproducible, Movable {
 
     public void placeOrganisms(Island island) throws NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
-        OrganismData data = getData(this);
-        int maxPerCell = data.maxPerCell();
         int counter = ORGANISM_PLACEMENT_CYCLES;
 
         while (counter > 0) {
-            int count = ThreadLocalRandom.current().nextInt(1, maxPerCell + 1);
-            int startX = ThreadLocalRandom.current().nextInt(island.getHeight());
-            int startY = ThreadLocalRandom.current().nextInt(island.getWidth());
+            int count = getRandomNumber(1, getMaxPerCell() + 1);
+            int startX = getRandomInt(island.getHeight());
+            int startY = getRandomInt(island.getWidth());
             for (int i = 0; i < count; i++) {
                 Location location = island.getLocation(startX, startY);
                 if (location != null) {
-                    Organism organism = this.getClass().getConstructor().newInstance();
-                    organism.setWeight(ThreadLocalRandom.current().nextDouble(data.maxWeight() - data.maxWeight() * 0.2, data.maxWeight()));
-                    location.addOrganism(organism);
-                    organism.setLocation(location);
+                    OrganismFactory.createOrganism(getClass(), location, getMaxWeight(), MIN_WEIGHT_FACTOR);
                 }
             }
             counter--;
@@ -109,11 +107,10 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     }
 
     protected void looseWeight() {
-        setWeight(getWeight() * 0.99);
-        if (getWeight() < getMaxWeight() * 0.1) {
+        setWeight(getWeight() * LOSE_WEIGHT_FACTOR);
+        if (getWeight() < getMaxWeight() * DIE_WEIGHT_FACTOR) {
             die();
             location.removeOrganism(this);
-//            System.out.println(getName() + getId() + " died");
         }
     }
 
@@ -124,26 +121,23 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     protected void consumeFood(Organism food) {
         if (food instanceof Organism prey) {
             prey.die();
-            location.removeOrganism(prey);
         }
     }
 
     protected void setWeightsAfterEating(Organism food) {
-//        System.out.println("before eating " + getName() +  getId() + " = " + getWeight() + " prey: " + food.getName() + food.getId() + " = " + food.getWeight());
-        double newPredatorWeight;
-        if (food.getWeight() <= getFoodRequired()) {
-            newPredatorWeight = getWeight() + food.getWeight();
+        final double availableFoodWeight = food.getWeight();
+        double consumedFood = Math.min(availableFoodWeight, getFoodRequired());
+        double tentativeNewWeight = getWeight() + consumedFood;
+
+        if (tentativeNewWeight <= getMaxWeight()) {
+            setWeight(tentativeNewWeight);
+            food.setWeight(availableFoodWeight - consumedFood);
         } else {
-            newPredatorWeight = getWeight() + getFoodRequired();
-        }
-        if (newPredatorWeight <= getMaxWeight()) {
-            setWeight(newPredatorWeight);
-            food.setWeight(food.getWeight() - getFoodRequired());
-        } else {
-            food.setWeight(food.getWeight() - (getMaxWeight() - getWeight()));
+            double excessWeight = tentativeNewWeight - getMaxWeight();
+            double actualConsumed = consumedFood - excessWeight;
             setWeight(getMaxWeight());
+            food.setWeight(availableFoodWeight - actualConsumed);
         }
-//        System.out.println("after eating " + getName() +  getId() + " = " + getWeight() + " prey: " + food.getName() + food.getId() + " = " + food.getWeight());
     }
 
     protected void performMove(Location firstLock, Location secondLock, Location from, Location to) {
@@ -158,9 +152,9 @@ public abstract class Organism implements Eating, Reproducible, Movable {
 
     protected boolean cannotReproduce() {
         if (this instanceof Predator) {
-            return age < 5 || hasReproduced || !isALive();
+            return age < MIN_AGE_FOR_REPRODUCTION || hasReproduced || !isALive();
         } else {
-            return age % 10 != 0 || hasReproduced || !isALive();
+            return age < MIN_AGE_FOR_REPRODUCTION || age % REPRODUCTION_FREQUENCY != 0 || hasReproduced || !isALive();
         }
     }
 
@@ -174,28 +168,19 @@ public abstract class Organism implements Eating, Reproducible, Movable {
     }
 
     protected boolean hasSufficientPartners(List<Organism> partners) {
-        int minPartnersRequired = 2;
-        int maxCapacity = getData(this).maxPerCell();
+        int maxCapacity = getMaxPerCell();
 
-        return partners.size() >= minPartnersRequired &&
+        return partners.size() >= MIN_SPECIMENS_REQUIRED &&
                 partners.size() < maxCapacity;
     }
 
     protected void tryReproduce() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        Organism offspring = createOffspring();
-        location.addOrganism(offspring);
-        offspring.setLocation(location);
+        OrganismFactory.createOrganism(this.getClass(), location, this.getMaxWeight(), MIN_WEIGHT_FACTOR);
         hasReproduced = true;
-//        logReproduce(this, offspring, location);
-    }
-
-    protected Organism createOffspring() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Organism offspring = this.getClass().getDeclaredConstructor().newInstance();
-        offspring.setWeight(ThreadLocalRandom.current().nextDouble(ThreadLocalRandom.current().nextDouble(getMaxWeight() - getMaxWeight() * 0.2, getMaxWeight())));
-        return offspring;
     }
 
     public void die() {
         isALive = false;
+        location.removeOrganism(this);
     }
 }

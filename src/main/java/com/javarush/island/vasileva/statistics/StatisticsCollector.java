@@ -1,4 +1,4 @@
-package com.javarush.island.vasileva.statiistics;
+package com.javarush.island.vasileva.statistics;
 
 import com.javarush.island.vasileva.entity.map.Island;
 import com.javarush.island.vasileva.entity.map.Location;

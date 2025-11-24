@@ -8,7 +8,6 @@ import com.javarush.island.vasileva.entity.plants.Mushroom;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.javarush.island.vasileva.config.Setting.*;
@@ -74,12 +73,14 @@ public class EatingChances {
                 .add(Mushroom.class, 0.7)
         );
 
-        for (Class<?> herbivore : List.of(HERBIVORES_TYPES)) {
+        for (Class<?> herbivore : HERBIVORES_TYPES) {
             DietBuilder dietBuilder = new DietBuilder().add(Grass.class, 1.0);
-            if (List.of(HERBIVORES_TYPES_THAT_EAT_WORMS).contains(herbivore))
+            if (eatsWorms(herbivore)) {
                 dietBuilder.add(Worm.class, 0.9);
-            if (List.of(HERBIVORES_TYPES_THAT_EAT_MUSHROOMS).contains(herbivore))
+            }
+            if (eatsMushrooms(herbivore)) {
                 dietBuilder.add(Mushroom.class, 1.0);
+            }
             setDiet(herbivore, dietBuilder);
         }
     }
@@ -92,11 +93,19 @@ public class EatingChances {
         return animalDiet.get(prey);
     }
 
-    public static void setDiet(Class<?> animal, DietBuilder dietBuilder) {
+    private static boolean eatsWorms(Class<?> species) {
+        return HERBIVORES_TYPES_THAT_EAT_WORMS.contains(species);
+    }
+
+    private static boolean eatsMushrooms(Class<?> species) {
+        return HERBIVORES_TYPES_THAT_EAT_MUSHROOMS.contains(species);
+    }
+
+    private static void setDiet(Class<?> animal, DietBuilder dietBuilder) {
         EATING_CHANCES.put(animal, dietBuilder.build());
     }
 
-    public static class DietBuilder {
+    private static class DietBuilder {
         private final Map<Class<?>, Double> diet = new HashMap<>();
 
         public DietBuilder add(Class<?> prey, double chances) {

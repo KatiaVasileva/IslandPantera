@@ -1,11 +1,12 @@
 package com.javarush.island.vasileva.config;
 
-import com.javarush.island.vasileva.api.annotations.OrganismData;
-import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.animals.herbivores.*;
 import com.javarush.island.vasileva.entity.animals.predators.*;
 import com.javarush.island.vasileva.entity.plants.Grass;
 import com.javarush.island.vasileva.entity.plants.Mushroom;
+import com.javarush.island.vasileva.entity.plants.Plant;
+
+import java.util.List;
 
 public class Setting {
     public static final int CORE_POOL_SIZE = 3;
@@ -16,12 +17,19 @@ public class Setting {
     public static final int HEIGHT = 10;
     public static final int SHOW_WIDTH = 10;
     public static final int SHOW_HEIGHT = 10;
-    public static final int CELL_WIDTH = 6;
+    public static final int CELL_WIDTH = 7;
+    public static final int NUMBER_OF_SYMBOLS_IN_CELL = 3;
     public static final int ORGANISM_PLACEMENT_CYCLES = 2;
     public static final int MAX_PLANTS_PER_CELL = 3;
+    public static final double MIN_WEIGHT_FACTOR = 0.8;
+    public static final int MIN_SPECIMENS_REQUIRED = 2;
+    public static final double LOSE_WEIGHT_FACTOR = 0.99;
+    public static final double DIE_WEIGHT_FACTOR = 0.1;
+    public static final int MIN_AGE_FOR_REPRODUCTION = 5;
+    public static final int REPRODUCTION_FREQUENCY = 5;
     public static final int[][] DIRECTIONS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
-    public static final Class<?>[] TYPES = {
+    public static final List<Class<?>> TYPES = List.of(
             Wolf.class,
             Bear.class,
             Horse.class,
@@ -38,25 +46,23 @@ public class Setting {
             Boa.class,
             Worm.class,
             Grass.class,
-            Mushroom.class,
-    };
+            Mushroom.class
+    );
 
-    public static final Class<?>[] HERBIVORES_TYPES = {
+    public static final List<Class<?>> HERBIVORES_TYPES = List.of(
             Horse.class, Duck.class, Rabbit.class, Mouse.class, Deer.class,
             Boar.class, Goat.class, Sheep.class, Bull.class
-    };
+    );
 
-    public static final Class<?>[] HERBIVORES_TYPES_THAT_EAT_WORMS = {
+    public static final List<Class<?>> HERBIVORES_TYPES_THAT_EAT_WORMS = List.of(
             Duck.class, Mouse.class
-    };
+    );
 
-    public static final Class<?>[] PLANTS_TYPES = {
-            Grass.class, Mushroom.class
-    };
+    public static final List<Class<? extends Plant>> PLANTS_TYPES = List.of(Grass.class, Mushroom.class);
 
-    public static final Class<?>[] HERBIVORES_TYPES_THAT_EAT_MUSHROOMS = {
+    public static final List<Class<?>> HERBIVORES_TYPES_THAT_EAT_MUSHROOMS = List.of(
             Deer.class, Rabbit.class
-    };
+    );
 
     public static final String WOLF_IMAGE = "\uD83D\uDC3A";
     public static final String BOA_IMAGE = "\uD83D\uDC0D";
@@ -77,14 +83,5 @@ public class Setting {
     public static final String MUSHROOM_IMAGE = "\uD83C\uDF44";
 
     private Setting() {
-    }
-
-    public static OrganismData getData(Organism organism) {
-        OrganismData data = organism.getClass().getAnnotation(OrganismData.class);
-        if (data == null) {
-            throw new RuntimeException("Класс " + organism.getClass().getName() +
-                    " не имеет аннотации @OrganismData");
-        }
-        return data;
     }
 }

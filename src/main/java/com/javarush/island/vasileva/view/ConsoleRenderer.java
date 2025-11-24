@@ -25,7 +25,6 @@ public class ConsoleRenderer {
     public void render() {
         renderLock.lock();
         try {
-//            System.out.println("\n+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
             System.out.println("+" + "=".repeat(SHOW_WIDTH * CELL_WIDTH + SHOW_WIDTH + 1));
 
             for (int x = 0; x < SHOW_HEIGHT; x++) {
@@ -37,7 +36,6 @@ public class ConsoleRenderer {
                     System.out.print("|");
                 }
                 System.out.println();
-//                System.out.println("+" + "=".repeat(SHOW_WIDTH * (CELL_WIDTH + 1)));
                 System.out.println("+" + "=".repeat(SHOW_WIDTH * CELL_WIDTH + SHOW_WIDTH + 1));
             }
         } finally {
@@ -58,14 +56,12 @@ public class ConsoleRenderer {
             return " ".repeat(CELL_WIDTH);
         }
 
-        String firstSymbol = getMaxOrganismForCellRendering(livingOrganisms);
-        String secondSymbol = getSecondMaxOrganismForCellRendering(livingOrganisms);
-
         StringBuilder cell = new StringBuilder();
-        cell.append(firstSymbol.isEmpty() ? ' ' : firstSymbol);
-        cell.append(secondSymbol.isEmpty() ? ' ' : secondSymbol);
+        for (int rank = 1; rank <= NUMBER_OF_SYMBOLS_IN_CELL; rank++) {
+            String symbol = getNthOrganismSymbol(livingOrganisms, rank);
+            cell.append(symbol.isEmpty() ? ' ' : symbol);
+        }
 
-        // Дополняем до CELL_WIDTH пробелами справа
         while (cell.length() < CELL_WIDTH) {
             cell.append(' ');
         }
@@ -73,42 +69,34 @@ public class ConsoleRenderer {
         return cell.toString();
     }
 
-    // Show organism with the maximum number of animals/plants in the location
-    private String getMaxOrganismForCellRendering(List<Organism> organisms) {
-        Map<Class<?>, Integer> organismsCount = new HashMap<>();
-
-        for (Organism org : organisms) {
-            organismsCount.merge(org.getClass(), 1, Integer::sum);
-        }
-
-        Class<?> maxClass = organismsCount.entrySet()
-                .stream()
-                .max(Comparator.comparingInt(Map.Entry::getValue))
-                .map(Map.Entry::getKey)
-                .orElse(null);
-
-        return useSymbols
-                ? (maxClass != null ? SymbolMap.getSymbol(maxClass) : " ")
-                : (maxClass != null ? SymbolMap.getAbbrev(maxClass) : " ");
+    private String getNthOrganismSymbol(List<Organism> organisms, int n) {
+        Map<Class<?>, Integer> count = countOrganismsByClass(organisms);
+        Class<?> clazz = getNthMostFrequentClass(count, n);
+        return formatClassRepresentation(clazz);
     }
 
-    private String getSecondMaxOrganismForCellRendering(List<Organism> organisms) {
-        Map<Class<?>, Integer> organismsCount = new HashMap<>();
-
+    private Map<Class<?>, Integer> countOrganismsByClass(List<Organism> organisms) {
+        Map<Class<?>, Integer> count = new HashMap<>();
         for (Organism org : organisms) {
-            organismsCount.merge(org.getClass(), 1, Integer::sum);
+            count.merge(org.getClass(), 1, Integer::sum);
         }
+        return count;
+    }
 
-        Class<?> secondClass = organismsCount.entrySet()
+    private Class<?> getNthMostFrequentClass(Map<Class<?>, Integer> count, int n) {
+        return count.entrySet()
                 .stream()
                 .sorted(Map.Entry.<Class<?>, Integer>comparingByValue().reversed())
-                .skip(1)
+                .skip(n - 1)
                 .findFirst()
                 .map(Map.Entry::getKey)
                 .orElse(null);
+    }
 
-        return useSymbols
-                ? (secondClass != null ? SymbolMap.getSymbol(secondClass) : " ")
-                : (secondClass != null ? SymbolMap.getAbbrev(secondClass) : " ");
+    private String formatClassRepresentation(Class<?> clazz) {
+        if (clazz == null) {
+            return " ";
+        }
+        return useSymbols ? SymbolMap.getSymbol(clazz) : SymbolMap.getAbbrev(clazz);
     }
 }

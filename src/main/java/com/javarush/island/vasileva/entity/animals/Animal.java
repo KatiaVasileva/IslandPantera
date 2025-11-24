@@ -25,12 +25,9 @@ public abstract class Animal extends Organism {
             synchronized (loc) {
                 synchronized (item) {
                     if (!canEat(item)) {
-//                        System.out.println("current weight " + this.getName() + this.getId() + " = " + this.getWeight() + " " + item.getName());
                         looseWeight();
-//                        System.out.println("lost weight " + this.getName() + this.getId() + " = " + this.getWeight());
                         return;
                     }
-
                     if (!isFoodAvailable(item)) {
                         continue;
                     }
@@ -38,10 +35,7 @@ public abstract class Animal extends Organism {
                     setWeightsAfterEating(item);
                     if (item.getWeight() <= 0) {
                         item.die();
-//                        System.out.println(item.getName() + item.getId() + " is eaten");
                     }
-//                    System.out.println(this.getName() + this.getId() + " = " + this.getWeight());
-//                    logEat(this, item, loc);
                     return;
                 }
             }
@@ -76,6 +70,5 @@ public abstract class Animal extends Organism {
         Location[] lockOrder = loc.getLockOrder(newLoc);
 
         performMove(lockOrder[0], lockOrder[1], loc, newLoc);
-//        Debug.logMove(this, loc,  newLoc);
     }
 }
