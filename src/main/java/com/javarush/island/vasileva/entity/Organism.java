@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import static com.javarush.island.vasileva.config.Setting.*;
 import static com.javarush.island.vasileva.util.RandomValues.getRandomInt;
@@ -154,24 +155,20 @@ public abstract class Organism implements Eating, Reproducible, Movable {
         if (this instanceof Predator) {
             return age < MIN_AGE_FOR_REPRODUCTION || hasReproduced || !isALive();
         } else {
-            return age < MIN_AGE_FOR_REPRODUCTION || age % REPRODUCTION_FREQUENCY != 0 || hasReproduced || !isALive();
+            return age % REPRODUCTION_FREQUENCY != 0 || hasReproduced || !isALive();
         }
     }
 
     protected List<Organism> findPotentialPartners() {
-        return location.getOrganisms().stream()
-                .filter(org ->
-                        org.getClass() == this.getClass() &&
-                                org.isALive()
-                )
-                .toList();
+        return location.getSpecies().getOrDefault(getClass(), List.of())
+                .stream()
+                .filter(Organism::isALive)
+                .collect(Collectors.toList());
     }
 
     protected boolean hasSufficientPartners(List<Organism> partners) {
-        int maxCapacity = getMaxPerCell();
-
         return partners.size() >= MIN_SPECIMENS_REQUIRED &&
-                partners.size() < maxCapacity;
+                partners.size() < getMaxPerCell();
     }
 
     protected void tryReproduce() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

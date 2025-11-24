@@ -10,20 +10,20 @@ import java.util.List;
 
 public class Setting {
     public static final int CORE_POOL_SIZE = 3;
-    public static final int THREAD_NUMBER = 20;
+    public static final int THREAD_NUMBER = 17;
     public static final int TICK_DURATION = 1000;
 
-    public static final int WIDTH = 10;
-    public static final int HEIGHT = 10;
+    public static final int WIDTH = 100;
+    public static final int HEIGHT = 20;
     public static final int SHOW_WIDTH = 10;
     public static final int SHOW_HEIGHT = 10;
     public static final int CELL_WIDTH = 7;
     public static final int NUMBER_OF_SYMBOLS_IN_CELL = 3;
-    public static final int ORGANISM_PLACEMENT_CYCLES = 2;
+    public static final int ORGANISM_PLACEMENT_CYCLES = 10;
     public static final int MAX_PLANTS_PER_CELL = 3;
     public static final double MIN_WEIGHT_FACTOR = 0.8;
     public static final int MIN_SPECIMENS_REQUIRED = 2;
-    public static final double LOSE_WEIGHT_FACTOR = 0.99;
+    public static final double LOSE_WEIGHT_FACTOR = 0.95;
     public static final double DIE_WEIGHT_FACTOR = 0.1;
     public static final int MIN_AGE_FOR_REPRODUCTION = 5;
     public static final int REPRODUCTION_FREQUENCY = 5;

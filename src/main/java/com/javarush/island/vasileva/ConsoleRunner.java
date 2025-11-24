@@ -25,17 +25,10 @@ public class ConsoleRunner {
 
             islandConfig.configureServices(engine, consoleRenderer);
 
-            System.out.println("Начальная конфигурация острова:");
-            consoleRenderer.render();
-
+            System.out.println("\nЗапуск симуляции...");
             engine.startSimulation(TICK_DURATION);
 
-            System.out.println("\nЗапуск симуляции...");
-
-            Thread.sleep(900_000);
-            engine.shutdown();
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException |
-                 InterruptedException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

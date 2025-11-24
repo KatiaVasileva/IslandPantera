@@ -1,6 +1,9 @@
 package com.javarush.island.vasileva.service;
 
+import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.map.Island;
+import com.javarush.island.vasileva.entity.map.Location;
+import com.javarush.island.vasileva.entity.plants.Plant;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,12 +35,38 @@ public class SimulationEngine {
         if (island == null) {
             throw new IllegalStateException("Island is not initialized");
         }
-        for (SimulationService service : services) {
-            scheduledExecutorService.scheduleWithFixedDelay(service, 0, tickDuration, TimeUnit.MILLISECONDS);
+
+        Runnable simulationTask = () -> {
+            if (!areAnimalsAlive()) {
+                System.out.println("Симуляция остановлена: все животные вымерли.");
+                shutdown();
+                return;
+            }
+
+            services.forEach(workerPool::submit);
+        };
+
+        scheduledExecutorService.scheduleAtFixedRate(simulationTask, 0, tickDuration, TimeUnit.MILLISECONDS);
+    }
+
+    private boolean areAnimalsAlive() {
+        Location[][] grid = island.getGrid();
+
+        for (Location[] row : grid) {
+            for (Location location : row) {
+                for (Organism organism : location.getOrganisms()) {
+                    if (organism.isALive() && !(organism instanceof Plant)) {
+                        return true;
+                    }
+                }
+            }
         }
+        return false;
     }
 
     public void shutdown() {
+        System.out.println("Завершение симуляции...");
+
         workerPool.shutdown();
         scheduledExecutorService.shutdown();
 
@@ -52,6 +81,8 @@ public class SimulationEngine {
             workerPool.shutdownNow();
             scheduledExecutorService.shutdownNow();
             Thread.currentThread().interrupt();
+            System.err.println("Симуляция прервана: " + e.getMessage());
         }
+        System.out.println("Симуляция завершена.");
     }
 }

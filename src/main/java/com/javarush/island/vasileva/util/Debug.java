@@ -4,6 +4,9 @@ import com.javarush.island.vasileva.entity.Organism;
 import com.javarush.island.vasileva.entity.map.Location;
 
 public class Debug {
+    public Debug() {
+    }
+
     public static void logEat(Organism organism, Organism item, Location loc) {
         System.out.printf("%s съел %s в [%d,%d]%n",
                 organism.getName() + organism.getId(), item.getName() + item.getId(), loc.getX(), loc.getY());
@@ -22,7 +25,6 @@ public class Debug {
     public static void logWeightBeforeEating(Organism organism, Organism food) {
                 System.out.printf("weight of %s before eating = %f, weight of prey: %s = %f\n",
                         organism.getName() +  organism.getId(), organism.getWeight(), food.getName() + food.getId(),food.getWeight());
-
     }
 
     public static void logWeightAfterEating(Organism organism, Organism food) {
@@ -30,5 +32,4 @@ public class Debug {
                 organism.getName() +  organism.getId(), organism.getWeight(), food.getName() + food.getId(),food.getWeight());
 
     }
-
 }

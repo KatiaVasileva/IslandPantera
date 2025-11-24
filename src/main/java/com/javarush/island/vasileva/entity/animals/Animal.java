@@ -46,19 +46,21 @@ public abstract class Animal extends Organism {
         if (cannotReproduce()) return;
 
         Location loc = getLocation();
-        if (loc == null) return;
+        if (loc == null) {
+            System.out.println("Размножение прервано: location = null");
+            return;
+        }
 
         synchronized (loc) {
             if (cannotReproduce()) return;
-
             List<Organism> sameSpecies = findPotentialPartners();
-
             if (hasSufficientPartners(sameSpecies)) {
                 tryReproduce();
             }
         }
         age++;
     }
+
 
     public void move(Island island) {
         Location loc = getLocation();
